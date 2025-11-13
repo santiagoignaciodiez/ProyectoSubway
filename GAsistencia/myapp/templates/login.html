@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Asistencia - Subway</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #000000;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .logo-container {
+            margin: 30px 0;
+        }
+
+        .logo {
+            width: 220px;
+            height: auto;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #000000;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .description {
+            font-size: 13px;
+            color: #666666;
+            text-align: center;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .input {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 15px;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        .input:focus {
+            border-color: #FFC220;
+            background-color: #ffffff;
+        }
+
+        .input::placeholder {
+            color: #999999;
+        }
+
+        .button {
+            width: 100%;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            background-color: #000000;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 24px;
+            transition: background-color 0.2s;
+        }
+
+        .button:hover {
+            background-color: #1a1a1a;
+        }
+
+        .button:active {
+            background-color: #000000;
+            transform: scale(0.98);
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        .forgot-password a {
+            font-size: 14px;
+            color: #000000;
+            text-decoration: none;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        /* Simulación del logo de Subway con SVG */
+        .subway-logo {
+            display: inline-block;
+            font-size: 48px;
+            font-weight: 900;
+            letter-spacing: -2px;
+        }
+
+        .subway-text {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .subway-text span:nth-child(1) { color: #FFC220; } /* S */
+        .subway-text span:nth-child(2) { color: #FFC220; } /* U */
+        .subway-text span:nth-child(3) { color: #FFC220; } /* B */
+        .subway-text span:nth-child(4) { color: #009639; } /* W */
+        .subway-text span:nth-child(5) { color: #009639; } /* A */
+        .subway-text span:nth-child(6) { color: #009639; } /* Y */
+
+        .arrow {
+            color: #009639;
+            font-size: 48px;
+            margin-left: -8px;
+        }
+
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Gestión de Asistencia<br>de Empleados</h1>
+            
+            <div class="logo-container">
+                <div class="subway-logo">
+                    <div class="subway-text">
+                        <span>S</span>
+                        <span>U</span>
+                        <span>B</span>
+                        <span>W</span>
+                        <span>A</span>
+                        <span>Y</span>
+                        <span class="arrow">®</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">Iniciar Sesión</div>
+        <p class="description">
+            Introduce tu ID de empleado y contraseña para iniciar sesión en el dispositivo
+        </p>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <input 
+                    type="text" 
+                    class="input" 
+                    placeholder="ID de Empleado" 
+                    id="employee_id"
+                    required
+                    autocomplete="username"
+                >
+            </div>
+
+            <div class="form-group">
+                <input 
+                    type="password" 
+                    class="input" 
+                    placeholder="Contraseña" 
+                    id="password"
+                    required
+                    autocomplete="current-password"
+                >
+            </div>
+
+            <div id="errorMessage" class="error-message"></div>
+
+            <button type="submit" class="button" id="submitBtn">
+                Continuar
+            </button>
+        </form>
+
+        <div class="forgot-password">
+            <a href="#" id="forgotPassword">Olvidé mi contraseña</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const id_empleado = document.getElementById('employee_id').value;
+            const contrasena = document.getElementById('password').value;
+            const submitBtn = document.getElementById('submitBtn');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            errorMessage.textContent = '';
+            errorMessage.style.display = 'none';
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Iniciando sesión...';
+            
+            try {
+                const response = await fetch('/api/login/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id_empleado: id_empleado,
+                        contrasena: contrasena
+                    })
+                });
+                
+                const datos = await response.json();
+                
+                if (response.ok && datos.exito) {
+                    localStorage.setItem('token', datos.token);
+                    localStorage.setItem('empleado', JSON.stringify(datos.empleado));
+                    
+                    if (datos.empleado.es_gerente) {
+                        window.location.href = '/menuGerente/';
+                    } else {
+                        window.location.href = '/asistencia/';
+                    }
+                } else {
+                    errorMessage.textContent = datos.mensaje || 'Error al iniciar sesión';
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error de login:', error);
+                errorMessage.textContent = 'Error de conexión. Por favor intenta de nuevo.';
+                errorMessage.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Continuar';
+            }
+        });
+
+        document.getElementById('forgotPassword').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Contacta al administrador para recuperar tu contraseña');
+        });
+    </script>
+</body>
+</html>

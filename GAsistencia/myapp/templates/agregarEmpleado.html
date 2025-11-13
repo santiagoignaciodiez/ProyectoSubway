@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Empleado - Subway</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .header {
+            background-color: #fff;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .back-button {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            margin-right: 16px;
+            color: #333;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 24px 16px;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #00853d;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .form-label.required::after {
+            content: " *";
+            color: #ff0000;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #00853d;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            background-color: white;
+            cursor: pointer;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #00853d;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .radio-option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .photo-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .photo-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid #00853d;
+            object-fit: cover;
+            background-color: #f0f0f0;
+        }
+
+        .upload-button {
+            padding: 10px 20px;
+            background-color: #00853d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .upload-button:hover {
+            background-color: #006d32;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 16px;
+            background-color: #00853d;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 24px;
+        }
+
+        .submit-button:hover {
+            background-color: #006d32;
+        }
+
+        .error-message {
+            color: #ff0000;
+            font-size: 14px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .info-text {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="back-button" onclick="window.location.href='/listaEmpleados/'">&larr;</button>
+        <h1 class="header-title">Agregar Empleado</h1>
+    </div>
+
+    <div class="container">
+        <form id="empleadoForm" enctype="multipart/form-data">
+            <!-- Información Personal -->
+            <div class="form-section">
+                <h2 class="section-title">Información Personal</h2>
+                
+                <div class="form-group">
+                    <label class="form-label">Foto de Perfil</label>
+                    <div class="photo-upload">
+                        <img id="photoPreview" class="photo-preview" src="/static/placeholder-user.jpg" alt="Vista previa">
+                        <input type="file" id="fotoInput" name="foto_perfil" accept="image/*" class="hidden">
+                        <button type="button" class="upload-button" onclick="document.getElementById('fotoInput').click()">
+                            Seleccionar Foto
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">ID de Empleado</label>
+                    <input type="text" class="form-input" value="Se generará automáticamente" disabled>
+                    <p class="info-text">El ID se asignará automáticamente según el año y orden de registro</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label required">Nombre</label>
+                    <input type="text" name="nombre" class="form-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label required">Apellido</label>
+                    <input type="text" name="apellido" class="form-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label required">Cargo</label>
+                    <input type="text" name="cargo" class="form-input" placeholder="Ej: Principiante, A, B" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label required">DNI</label>
+                    <input type="text" name="dni" class="form-input" maxlength="8" pattern="[0-9]{7,8}" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label required">CUIL</label>
+                    <input type="text" name="cuil" class="form-input" maxlength="11" pattern="[0-9]{11}" required>
+                    <p class="info-text">11 dígitos sin guiones (ej: 20123456789)</p>
+                </div>
+            </div>
+
+            <!-- Datos Demográficos -->
+            <div class="form-section">
+                <h2 class="section-title">Datos Demográficos</h2>
+
+                <div class="form-group">
+                    <label class="form-label required">Género</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="masculino" name="genero" value="M" required>
+                            <label for="masculino">Masculino</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="femenino" name="genero" value="F" required>
+                            <label for="femenino">Femenino</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label required">Fecha de Nacimiento</label>
+                    <input type="date" name="fecha_nacimiento" class="form-input" required onchange="calcularEdad(this)">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label required">Edad</label>
+                    <input type="number" name="edad" id="edadInput" class="form-input" min="18" max="100" required readonly>
+                    <p class="info-text">Se calcula automáticamente desde la fecha de nacimiento</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label required">Estado Civil</label>
+                    <select name="estado_civil" class="form-select" required>
+                        <option value="">Seleccionar...</option>
+                        <option value="soltero">Soltero/a</option>
+                        <option value="casado">Casado/a</option>
+                        <option value="divorciado">Divorciado/a</option>
+                        <option value="viudo">Viudo/a</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label required">¿Tiene Hijos?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="tieneHijosSi" name="tiene_hijos" value="true" required>
+                            <label for="tieneHijosSi">Sí</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="tieneHijosNo" name="tiene_hijos" value="false" required>
+                            <label for="tieneHijosNo">No</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información de Domicilio -->
+            <div class="form-section">
+                <h2 class="section-title">Información de Domicilio</h2>
+
+                <div class="form-group">
+                    <label class="form-label required">Nombre del Domicilio (Calle)</label>
+                    <input type="text" name="nombre_domicilio" class="form-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Número de Casa</label>
+                    <input type="text" name="numero_casa" class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Piso de Departamento</label>
+                    <input type="text" name="piso_departamento" class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Número de Departamento</label>
+                    <input type="text" name="numero_departamento" class="form-input">
+                </div>
+            </div>
+
+            <!-- Contacto de Emergencia -->
+            <div class="form-section">
+                <h2 class="section-title">Contacto de Emergencia</h2>
+
+                <div class="form-group">
+                    <label class="form-label required">Número de Emergencia</label>
+                    <input type="tel" name="numero_emergencia" class="form-input" pattern="[0-9]{10,15}" required>
+                    <p class="info-text">Número de contacto en caso de emergencia (10-15 dígitos)</p>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-button">Guardar Empleado</button>
+        </form>
+    </div>
+
+    <script>
+        // Vista previa de la foto
+        document.getElementById('fotoInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('photoPreview').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Calcular edad automáticamente
+        function calcularEdad(input) {
+            const fechaNacimiento = new Date(input.value);
+            const hoy = new Date();
+            let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+            const mes = hoy.getMonth() - fechaNacimiento.getMonth();
+            
+            if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+                edad--;
+            }
+            
+            document.getElementById('edadInput').value = edad;
+        }
+
+        // Enviar formulario
+        document.getElementById('empleadoForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            try {
+                const response = await fetch('/api/empleados/crear/', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.exito) {
+                    alert(`Empleado agregado exitosamente con ID: ${data.employee_id}`);
+                    window.location.href = '/listaEmpleados/';
+                } else {
+                    alert('Error: ' + data.mensaje);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al guardar el empleado');
+            }
+        });
+    </script>
+</body>
+</html>

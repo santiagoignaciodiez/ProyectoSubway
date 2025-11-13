@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú Gerente - Subway</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        /* Header con logos */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 10px 0;
+        }
+
+        .subway-logo {
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+
+        .subway-text {
+            display: flex;
+            align-items: center;
+        }
+
+        .subway-text span:nth-child(1),
+        .subway-text span:nth-child(2),
+        .subway-text span:nth-child(3) { 
+            color: #FFC220; 
+        }
+        
+        .subway-text span:nth-child(4),
+        .subway-text span:nth-child(5),
+        .subway-text span:nth-child(6) { 
+            color: #009639; 
+        }
+
+        .colsubsidio-logo {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .colsubsidio-icon {
+            font-size: 28px;
+            color: #4CAF50;
+            margin-bottom: 2px;
+        }
+
+        .colsubsidio-text {
+            font-size: 9px;
+            font-weight: 600;
+            color: #000000;
+        }
+
+        /* Sección de usuario */
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            background-color: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 600;
+            color: #666666;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-role {
+            font-size: 14px;
+            color: #666666;
+            margin-bottom: 2px;
+        }
+
+        .user-id {
+            font-size: 13px;
+            color: #999999;
+            letter-spacing: 1px;
+        }
+
+        /* Botones del menú */
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .menu-button {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px 20px;
+            background-color: #2d2d2d;
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .menu-button:hover {
+            background-color: #3d3d3d;
+            transform: translateY(-2px);
+        }
+
+        .menu-button:active {
+            transform: translateY(0);
+        }
+
+        .menu-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        /* Botón de salir */
+        .logout-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 14px 32px;
+            background-color: #ef4444;
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            transition: all 0.2s;
+        }
+
+        .logout-button:hover {
+            background-color: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+        }
+
+        .logout-button:active {
+            transform: translateY(0);
+        }
+
+        /* Iconos SVG simulados con símbolos */
+        .icon-check::before { content: '✓'; }
+        .icon-users::before { content: '👥'; }
+        .icon-clock::before { content: '🕐'; }
+        .icon-list::before { content: '📋'; }
+        .icon-warning::before { content: '⚠'; }
+        .icon-leaf::before { content: '🌱'; }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 10px;
+            }
+
+            .logout-button {
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header con logos -->
+        <div class="header">
+            <div class="subway-logo">
+                <div class="subway-text">
+                    <span>S</span>
+                    <span>U</span>
+                    <span>B</span>
+                    <span>W</span>
+                    <span>A</span>
+                    <span>Y</span>
+                </div>
+            </div>
+            <div class="colsubsidio-logo">
+                <div class="colsubsidio-icon icon-leaf"></div>
+                <div class="colsubsidio-text">Colsubsidio</div>
+            </div>
+        </div>
+
+        <!-- Información del usuario -->
+        <div class="user-section">
+            <div class="user-avatar">U</div>
+            <div class="user-info">
+                <div class="user-role">Gerente</div>
+                <div class="user-id" id="userId">xxxxxxxxxxxx</div>
+            </div>
+        </div>
+
+        <!-- Botones del menú -->
+        <div class="menu-buttons">
+            <a href="#asistencia" class="menu-button">
+                <div class="menu-icon icon-check"></div>
+                <span>Asistencia</span>
+            </a>
+
+            <a href="#justificaciones" class="menu-button">
+                <div class="menu-icon icon-users"></div>
+                <span>Justificaciones</span>
+            </a>
+
+            <a href="#cronograma" class="menu-button">
+                <div class="menu-icon icon-clock"></div>
+                <span>Cronograma</span>
+            </a>
+
+            <!-- Actualizando enlace para ir a la página de lista de empleados -->
+            <a href="/listaEmpleados/" class="menu-button">
+                <div class="menu-icon icon-list"></div>
+                <span>Lista de Empleado</span>
+            </a>
+
+            <a href="#sanciones" class="menu-button">
+                <div class="menu-icon icon-warning"></div>
+                <span>Sanciones</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Botón de salir -->
+    <button class="logout-button" id="logoutBtn">Salir</button>
+
+    <script>
+        // Cargar información del usuario
+        window.addEventListener('DOMContentLoaded', function() {
+            const datosEmpleado = localStorage.getItem('empleado');
+            
+            if (!datosEmpleado) {
+                window.location.href = '/login/';
+                return;
+            }
+            
+            const empleado = JSON.parse(datosEmpleado);
+            
+            // Si no es gerente, redirigir
+            if (!empleado.es_gerente) {
+                alert('Acceso denegado. Solo para gerentes.');
+                window.location.href = '/login/';
+                return;
+            }
+            
+            if (empleado.id_empleado) {
+                document.getElementById('userId').textContent = empleado.id_empleado;
+            }
+        });
+
+        // Botón de logout
+        document.getElementById('logoutBtn').addEventListener('click', async function() {
+            if (confirm('¿Estás seguro que deseas cerrar sesión?')) {
+                try {
+                    await fetch('/api/logout/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error al cerrar sesión:', error);
+                }
+                
+                localStorage.removeItem('empleado');
+                localStorage.removeItem('token');
+                window.location.href = '/login/';
+            }
+        });
+    </script>
+</body>
+</html>
