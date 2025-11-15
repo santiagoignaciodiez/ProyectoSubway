@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Asistencia - Subway</title>
+    <title>Recuperar Contraseña - Subway</title>
     <style>
         * {
             margin: 0;
@@ -32,6 +32,22 @@
             margin-bottom: 40px;
         }
 
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #000000;
+            padding: 8px;
+        }
+
+        .back-button:hover {
+            color: #009639;
+        }
+
         .title {
             font-size: 20px;
             font-weight: 600;
@@ -44,9 +60,30 @@
             margin: 30px 0;
         }
 
-        .logo {
-            width: 220px;
-            height: auto;
+        .subway-logo {
+            display: inline-block;
+            font-size: 48px;
+            font-weight: 900;
+            letter-spacing: -2px;
+        }
+
+        .subway-text {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .subway-text span:nth-child(1) { color: #FFC220; }
+        .subway-text span:nth-child(2) { color: #FFC220; }
+        .subway-text span:nth-child(3) { color: #FFC220; }
+        .subway-text span:nth-child(4) { color: #009639; }
+        .subway-text span:nth-child(5) { color: #009639; }
+        .subway-text span:nth-child(6) { color: #009639; }
+
+        .arrow {
+            color: #009639;
+            font-size: 48px;
+            margin-left: -8px;
         }
 
         .section-title {
@@ -112,58 +149,44 @@
             transform: scale(0.98);
         }
 
-        .forgot-password {
+        .button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
             text-align: center;
-            margin-top: 16px;
-        }
-
-        .forgot-password a {
             font-size: 14px;
-            color: #000000;
-            text-decoration: none;
-        }
-
-        .forgot-password a:hover {
-            text-decoration: underline;
-        }
-
-        .subway-logo {
-            display: inline-block;
-            font-size: 48px;
-            font-weight: 900;
-            letter-spacing: -2px;
-        }
-
-        .subway-text {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .subway-text span:nth-child(1) { color: #FFC220; }
-        .subway-text span:nth-child(2) { color: #FFC220; }
-        .subway-text span:nth-child(3) { color: #FFC220; }
-        .subway-text span:nth-child(4) { color: #009639; }
-        .subway-text span:nth-child(5) { color: #009639; }
-        .subway-text span:nth-child(6) { color: #009639; }
-
-        .arrow {
-            color: #009639;
-            font-size: 48px;
-            margin-left: -8px;
         }
 
         .error-message {
-            color: red;
-            text-align: center;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 12px 16px;
+            border-radius: 8px;
             margin-bottom: 16px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
+    <button class="back-button" onclick="window.location.href='/login/'">←</button>
+
     <div class="container">
         <div class="header">
-            <h1 class="title">Gestión de Asistencia<br>de Empleados</h1>
+            <h1 class="title">Recuperar Contraseña</h1>
             
             <div class="logo-container">
                 <div class="subway-logo">
@@ -180,101 +203,85 @@
             </div>
         </div>
 
-        <div class="section-title">Iniciar Sesión</div>
+        <div class="section-title">Solicitar Nueva Contraseña</div>
         <p class="description">
-            Introduce tu ID de empleado y contraseña para iniciar sesión en el dispositivo
+            Introduce tu correo electrónico para solicitar una nueva contraseña. Se enviará un correo al administrador.
         </p>
 
-        <form id="loginForm">
+        <div id="successMessage" class="success-message hidden"></div>
+        <div id="errorMessage" class="error-message hidden"></div>
+
+        <!-- simplificado para solo pedir correo electrónico -->
+        <form id="recoveryForm">
             <div class="form-group">
                 <input 
-                    type="text" 
+                    type="email" 
                     class="input" 
-                    placeholder="ID de Empleado" 
-                    id="employee_id"
+                    placeholder="tu@email.com" 
+                    id="email"
                     required
-                    autocomplete="username"
                 >
             </div>
-
-            <div class="form-group">
-                <input 
-                    type="password" 
-                    class="input" 
-                    placeholder="Contraseña" 
-                    id="password"
-                    required
-                    autocomplete="current-password"
-                >
-            </div>
-
-            <div id="errorMessage" class="error-message"></div>
 
             <button type="submit" class="button" id="submitBtn">
-                Continuar
+                Enviar Solicitud
             </button>
         </form>
-
-        <div class="forgot-password">
-            <!-- Updated forgot password link to go to recovery page -->
-            <a href="/recuperar-contrasena/">Olvidé mi contraseña</a>
-        </div>
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        document.getElementById('recoveryForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const id_empleado = document.getElementById('employee_id').value;
-            const contrasena = document.getElementById('password').value;
+            const email = document.getElementById('email').value;
             const submitBtn = document.getElementById('submitBtn');
             const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
             
-            errorMessage.textContent = '';
-            errorMessage.style.display = 'none';
+            errorMessage.classList.add('hidden');
+            successMessage.classList.add('hidden');
+            
+            if (!email) {
+                errorMessage.textContent = 'Por favor ingresa tu correo electrónico';
+                errorMessage.classList.remove('hidden');
+                return;
+            }
             
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Iniciando sesión...';
+            submitBtn.textContent = 'Enviando solicitud...';
             
             try {
-                const response = await fetch('/api/login/', {
+                const response = await fetch('/api/recuperar-contrasena/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        id_empleado: id_empleado,
-                        contrasena: contrasena
+                        email: email
                     })
                 });
                 
                 const datos = await response.json();
                 
                 if (response.ok && datos.exito) {
-                    if (datos.requiere_setup) {
-                        window.location.href = '/configuracion-inicial/';
-                        return;
-                    }
+                    successMessage.textContent = datos.mensaje;
+                    successMessage.classList.remove('hidden');
+                    document.getElementById('recoveryForm').reset();
                     
-                    localStorage.setItem('token', datos.token);
-                    localStorage.setItem('empleado', JSON.stringify(datos.empleado));
-                    
-                    if (datos.empleado.es_gerente) {
-                        window.location.href = '/menuGerente/';
-                    } else {
-                        window.location.href = '/asistencia/';
-                    }
+                    setTimeout(() => {
+                        window.location.href = '/login/';
+                    }, 3000);
                 } else {
-                    errorMessage.textContent = datos.mensaje || 'Error al iniciar sesión';
-                    errorMessage.style.display = 'block';
+                    errorMessage.textContent = datos.mensaje || 'Error al enviar la solicitud';
+                    errorMessage.classList.remove('hidden');
                 }
             } catch (error) {
-                console.error('Error de login:', error);
+                console.error('Error:', error);
                 errorMessage.textContent = 'Error de conexión. Por favor intenta de nuevo.';
-                errorMessage.style.display = 'block';
+                errorMessage.classList.remove('hidden');
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Continuar';
+                submitBtn.textContent = 'Enviar Solicitud';
             }
         });
     </script>

@@ -33,6 +33,10 @@ class Employee(AbstractBaseUser, PermissionsMixin):
     cuil = models.CharField("CUIL", max_length=11, unique=True)
     foto_perfil = models.ImageField("Foto de Perfil", upload_to='empleados/', null=True, blank=True)
     
+    email = models.EmailField("Correo Electrónico", blank=True, null=True)
+    
+    setup_completo = models.BooleanField("Setup Completo", default=False)
+    
     # Datos demográficos
     GENERO_CHOICES = [
         ('M', 'Masculino'),
