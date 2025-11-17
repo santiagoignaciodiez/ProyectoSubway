@@ -14,16 +14,14 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background-color: #f5f5f5;
-            min-height: 100vh;
+            padding: 20px;
         }
 
         .header {
-            background-color: #ffffff;
-            padding: 16px;
             display: flex;
             align-items: center;
-            gap: 16px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            gap: 15px;
+            margin-bottom: 30px;
         }
 
         .back-button {
@@ -31,59 +29,64 @@
             border: none;
             font-size: 24px;
             cursor: pointer;
-            padding: 4px;
+            padding: 5px;
         }
 
-        .header-title {
-            font-size: 20px;
+        .header h1 {
+            font-size: 24px;
             font-weight: 600;
-            color: #333;
         }
 
         .tabs {
             display: flex;
-            background-color: #ffffff;
-            padding: 0 16px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
         }
 
         .tab {
             flex: 1;
-            padding: 16px;
+            padding: 15px;
             text-align: center;
+            cursor: pointer;
             border: none;
             background: none;
             font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
             color: #666;
+            position: relative;
         }
 
         .tab.active {
-            color: #00A651;
-            border-bottom-color: #00A651;
+            color: #00A878;
+            font-weight: 600;
         }
 
-        .search-container {
-            padding: 16px;
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: #00A878;
         }
 
         .search-box {
+            background-color: #C8E6C9; /* Updated to stronger green tone for better contrast */
+            border-radius: 12px;
+            padding: 15px;
             display: flex;
             align-items: center;
-            background-color: #D4F4DD;
-            border-radius: 12px;
-            padding: 12px 16px;
-            gap: 12px;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
         .search-icon {
             width: 24px;
             height: 24px;
-            color: #00A651;
+            color: #00A878;
         }
 
-        .search-input {
+        .search-box input {
             flex: 1;
             border: none;
             background: none;
@@ -92,19 +95,97 @@
             color: #333;
         }
 
-        .search-input::placeholder {
+        .search-box input::placeholder {
             color: #666;
         }
 
-        .search-button {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 4px;
+        .empleados-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
-        .content {
-            padding: 16px;
+        .empleado-card {
+            background-color: #C8E6C9; /* Updated to stronger green tone for better contrast */
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+        }
+
+        .empleado-initial {
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 600;
+            color: #00A878;
+            flex-shrink: 0;
+        }
+
+        .empleado-info {
+            flex: 1;
+        }
+
+        .empleado-nombre {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .empleado-detalles {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .empleado-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-button {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background-color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .action-button:hover {
+            background-color: #f0f0f0;
+        }
+
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background-color: #00A878;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 168, 120, 0.3);
+        }
+
+        .fab:hover {
+            background-color: #008c64;
         }
 
         .empty-state {
@@ -114,103 +195,153 @@
         }
 
         .empty-state-icon {
-            font-size: 64px;
-            margin-bottom: 16px;
+            font-size: 60px;
+            margin-bottom: 20px;
         }
 
         .empty-state-text {
             font-size: 18px;
-            margin-bottom: 8px;
-        }
-
-        .empty-state-subtext {
-            font-size: 14px;
-            color: #bbb;
-        }
-
-        .fab {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            width: 56px;
-            height: 56px;
-            background-color: #00A651;
-            border: none;
-            border-radius: 50%;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.2s;
-        }
-
-        .fab:hover {
-            transform: scale(1.1);
-        }
-
-        .fab:active {
-            transform: scale(0.95);
+            color: #666;
         }
     </style>
 </head>
 <body>
     <div class="header">
         <button class="back-button" onclick="window.location.href='/menuGerente/'">←</button>
-        <h1 class="header-title">Lista de Empleado</h1>
+        <h1>Lista de Empleado</h1>
     </div>
 
     <div class="tabs">
-        <button class="tab active" id="tabActivo">Activo</button>
-        <button class="tab" id="tabInactivo">Inactivo</button>
+        <button class="tab active" data-tab="activo">Activo</button>
+        <button class="tab" data-tab="inactivo">Inactivo</button>
     </div>
 
-    <div class="search-container">
-        <div class="search-box">
-            <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <circle cx="11" cy="11" r="8"></circle>
-                <path d="m21 21-4.35-4.35"></path>
-            </svg>
-            <input type="text" class="search-input" id="searchInput" placeholder="Buscar Empleado">
-            <button class="search-button">
-                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.35-4.35"></path>
-                </svg>
-            </button>
-        </div>
+    <div class="search-box">
+        <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Buscar Empleado">
     </div>
 
-    <div class="content" id="employeeList">
-        <div class="empty-state">
-            <div class="empty-state-icon">👥</div>
-            <div class="empty-state-text">No hay empleados registrados</div>
-            <div class="empty-state-subtext">Usa el botón + para agregar empleados</div>
-        </div>
+    <div class="empleados-container" id="empleadosContainer">
+        {% if empleados %}
+            {% for empleado in empleados %}
+            <div class="empleado-card" data-activo="{{ empleado.is_active|yesno:'true,false' }}" data-nombre="{{ empleado.nombre }} {{ empleado.apellido }}" data-dni="{{ empleado.dni }}" data-codigo="{{ empleado.employee_id }}" onclick="verEmpleado('{{ empleado.employee_id }}')">
+                <!-- Show employee photo if available, otherwise show initial -->
+                <div class="empleado-initial">
+                    {% if empleado.foto_perfil %}
+                        <img src="{{ empleado.foto_perfil.url }}" alt="{{ empleado.nombre }}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                    {% else %}
+                        {{ empleado.nombre.0 }}
+                    {% endif %}
+                </div>
+                <div class="empleado-info">
+                    <div class="empleado-nombre">{{ empleado.nombre }} {{ empleado.apellido }}</div>
+                    <div class="empleado-detalles">
+                        Cargo: {{ empleado.position }}<br>
+                        Cod: {{ empleado.employee_id }}
+                    </div>
+                </div>
+                <div class="empleado-actions">
+                    <a href="{% url 'editar_empleado' empleado.employee_id %}" class="action-button" style="text-decoration: none; display: flex; align-items: center; justify-content: center;" onclick="event.stopPropagation();">
+                        ✏️
+                    </a>
+                    <button class="action-button" onclick="event.stopPropagation(); eliminarEmpleado('{{ empleado.employee_id }}')">
+                        🗑️
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">⚠️</div>
+                <div class="empty-state-text">No hay empleados registrados</div>
+            </div>
+        {% endif %}
     </div>
 
     <button class="fab" onclick="window.location.href='/agregarEmpleado/'">
-        ✕
+        <svg width="24" height="24" fill="none" stroke="white" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
     </button>
 
     <script>
-        // Cambiar entre pestañas
-        document.getElementById('tabActivo').addEventListener('click', function() {
-            document.getElementById('tabActivo').classList.add('active');
-            document.getElementById('tabInactivo').classList.remove('active');
+        // Tab switching
+        const tabs = document.querySelectorAll('.tab');
+        const cards = document.querySelectorAll('.empleado-card');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                const selectedTab = tab.dataset.tab;
+                cards.forEach(card => {
+                    const isActive = card.dataset.activo === 'true';
+                    if (selectedTab === 'activo' && isActive) {
+                        card.style.display = 'flex';
+                    } else if (selectedTab === 'inactivo' && !isActive) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
         });
 
-        document.getElementById('tabInactivo').addEventListener('click', function() {
-            document.getElementById('tabInactivo').classList.add('active');
-            document.getElementById('tabActivo').classList.remove('active');
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            cards.forEach(card => {
+                const nombre = card.dataset.nombre.toLowerCase();
+                const dni = card.dataset.dni.toLowerCase();
+                const codigo = card.dataset.codigo.toLowerCase();
+                
+                if (nombre.includes(searchTerm) || dni.includes(searchTerm) || codigo.includes(searchTerm)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
         });
 
-        // Funcionalidad de búsqueda (por implementar cuando haya empleados)
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            console.log('[v0] Buscando:', e.target.value);
+        // Initialize: show only active employees
+        cards.forEach(card => {
+            if (card.dataset.activo !== 'true') {
+                card.style.display = 'none';
+            }
         });
+
+        function eliminarEmpleado(employeeId) {
+            if (confirm('¿Estás seguro de que deseas desactivar este empleado?')) {
+                fetch(`/api/empleados/${employeeId}/desactivar/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.exito) {
+                        alert(data.mensaje);
+                        window.location.reload();
+                    } else {
+                        alert('Error: ' + data.mensaje);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al desactivar el empleado');
+                });
+            }
+        }
+
+        function verEmpleado(employeeId) {
+            window.location.href = `/verEmpleado/${employeeId}/`;
+        }
     </script>
 </body>
 </html>

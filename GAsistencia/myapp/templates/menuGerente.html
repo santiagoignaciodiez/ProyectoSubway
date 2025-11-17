@@ -230,21 +230,24 @@
             <div class="user-avatar">U</div>
             <div class="user-info">
                 <div class="user-role">Gerente</div>
-                <div class="user-id" id="userId">xxxxxxxxxxxx</div>
+                <div class="user-id" id="userId">
+                    <span id="nombreApellido">xxxxxxxxxxxx</span>
+                </div>
             </div>
         </div>
 
         <!-- Botones del menú -->
         <div class="menu-buttons">
-            <a href="#asistencia" class="menu-button">
+            <a href="/asistenciaGerente/" class="menu-button">
                 <div class="menu-icon icon-check"></div>
                 <span>Asistencia</span>
             </a>
 
-            <a href="#justificaciones" class="menu-button">
+            <a href="/justificacionesGerente/" class="menu-button">
                 <div class="menu-icon icon-users"></div>
                 <span>Justificaciones</span>
             </a>
+
 
             <a href="#cronograma" class="menu-button">
                 <div class="menu-icon icon-clock"></div>
@@ -286,8 +289,8 @@
                 return;
             }
             
-            if (empleado.id_empleado) {
-                document.getElementById('userId').textContent = empleado.id_empleado;
+            if (empleado.nombre && empleado.apellido) {
+                document.getElementById('nombreApellido').textContent = `${empleado.nombre} ${empleado.apellido}`;
             }
         });
 

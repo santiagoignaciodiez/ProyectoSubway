@@ -32,6 +32,8 @@ class Employee(AbstractBaseUser, PermissionsMixin):
     dni = models.CharField("DNI", max_length=8, unique=True)
     cuil = models.CharField("CUIL", max_length=11, unique=True)
     foto_perfil = models.ImageField("Foto de Perfil", upload_to='empleados/', null=True, blank=True)
+    numero_telefono = models.CharField("Número de Telefono", max_length=20)
+
     
     email = models.EmailField("Correo Electrónico", blank=True, null=True)
     

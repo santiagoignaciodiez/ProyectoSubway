@@ -7,6 +7,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from .models import Employee
 import json
+from myapp.utils import process_employee_photo, optimize_employee_photo
 
 def vista_login(request):
     return render(request, 'login.html')
@@ -15,20 +16,126 @@ def vista_menu_gerente(request):
     return render(request, 'menuGerente.html')
 
 def vista_lista_empleados(request):
-    empleados = Employee.objects.all().exclude(employee_id='Gerente')
+    empleados = Employee.objects.filter(is_manager=False)
     return render(request, 'listaEmpleados.html', {'empleados': empleados})
 
 def vista_agregar_empleado(request):
+    if request.method == 'POST':
+        try:
+            # Crear nuevo empleado con los datos del formulario
+            empleado = Employee.objects.create(
+                nombre=request.POST.get('nombre'),
+                apellido=request.POST.get('apellido'),
+                dni=request.POST.get('dni'),
+                cuil=request.POST.get('cuil'),
+                email=request.POST.get('email', ''),
+                genero=request.POST.get('genero'),
+                edad=int(request.POST.get('edad')),
+                fecha_nacimiento=request.POST.get('fecha_nacimiento'),
+                estado_civil=request.POST.get('estado_civil'),
+                tiene_hijos=request.POST.get('tiene_hijos') == 'on',
+                nombre_domicilio=request.POST.get('nombre_domicilio'),
+                numero_casa=request.POST.get('numero_casa', ''),
+                piso_departamento=request.POST.get('piso_departamento', ''),
+                numero_departamento=request.POST.get('numero_departamento', ''),
+                numero_emergencia=request.POST.get('numero_emergencia', ''),  # ← ahora sí es número de emergencia real
+                position=request.POST.get('cargo', 'Principiante'),
+                is_active=True
+            )
+            
+            if request.FILES.get('foto_perfil'):
+                photo_file = request.FILES['foto_perfil']
+                file_path, processed_file = optimize_employee_photo(photo_file, empleado.employee_id)
+                
+                if file_path and processed_file:
+                    empleado.foto_perfil = processed_file
+                    empleado.foto_perfil.name = file_path  # Establecer nombre con employee_id
+                    empleado.save()
+                    print(f"[v0] Foto guardada para {empleado.employee_id} en: {file_path}")
+            
+            # Establecer contraseña por defecto
+            empleado.set_password('subway2025')
+            empleado.save()
+            
+            # Redirigir a la lista de empleados después de guardar
+            return redirect('/listaEmpleados/')
+        except Exception as e:
+            # Si hay un error, renderizar el formulario con el mensaje de error
+            return render(request, 'agregarEmpleado.html', {
+                'error': f'Error al crear empleado: {str(e)}'
+            })
+    
+    # GET request - mostrar el formulario
     return render(request, 'agregarEmpleado.html')
 
 def vista_asistencia(request):
-    return render(request, 'asistencia.html')
+    return render(request, 'asistenciaGerente.html')
 
 def vista_recuperar_contrasena(request):
     return render(request, 'recuperarContrasena.html')
 
 def vista_configuracion_inicial(request):
     return render(request, 'configuracionInicial.html')
+
+def vista_justificaciones_gerente(request):
+    return render(request, 'justificacionesGerente.html')
+
+def vista_editar_empleado(request, employee_id):
+    try:
+        empleado = Employee.objects.get(employee_id=employee_id)
+        
+        if request.method == 'POST':
+            try:
+                # Actualizar todos los campos excepto employee_id
+                empleado.nombre = request.POST.get('nombre')
+                empleado.apellido = request.POST.get('apellido')
+                empleado.dni = request.POST.get('dni')
+                empleado.cuil = request.POST.get('cuil')
+                empleado.email = request.POST.get('email', '')
+                empleado.genero = request.POST.get('genero')
+                empleado.edad = int(request.POST.get('edad'))
+                empleado.fecha_nacimiento = request.POST.get('fecha_nacimiento')
+                empleado.estado_civil = request.POST.get('estado_civil')
+                empleado.tiene_hijos = request.POST.get('tiene_hijos') == 'on'
+                empleado.nombre_domicilio = request.POST.get('nombre_domicilio')
+                empleado.numero_casa = request.POST.get('numero_casa', '')
+                empleado.piso_departamento = request.POST.get('piso_departamento', '')
+                empleado.numero_departamento = request.POST.get('numero_departamento', '')
+                empleado.numero_emergencia = request.POST.get('numero_emergencia')
+                empleado.position = request.POST.get('cargo')
+                empleado.is_active = request.POST.get('is_active') == 'on'
+                
+                if request.FILES.get('foto_perfil'):
+                    photo_file = request.FILES['foto_perfil']
+                    file_path, processed_file = optimize_employee_photo(photo_file, empleado.employee_id)
+                    
+                    if file_path and processed_file:
+                        empleado.foto_perfil = processed_file
+                        empleado.foto_perfil.name = file_path
+                        print(f"[v0] Foto actualizada para {empleado.employee_id} en: {file_path}")
+                
+                empleado.save()
+                
+                # Redirigir a la lista de empleados después de guardar
+                return redirect('/listaEmpleados/')
+            except Exception as e:
+                # Si hay un error, renderizar el formulario con el mensaje de error
+                return render(request, 'editarEmpleado.html', {
+                    'empleado': empleado,
+                    'error': str(e)
+                })
+        
+        # GET request - mostrar el formulario
+        return render(request, 'editarEmpleado.html', {'empleado': empleado})
+    except Employee.DoesNotExist:
+        return redirect('/listaEmpleados/')
+
+def vista_ver_empleado(request, employee_id):
+    try:
+        empleado = Employee.objects.get(employee_id=employee_id)
+        return render(request, 'verEmpleado.html', {'empleado': empleado})
+    except Employee.DoesNotExist:
+        return redirect('/listaEmpleados/')
 
 @csrf_exempt
 def api_login(request):
@@ -168,6 +275,7 @@ def api_crear_empleado(request):
                 cuil=request.POST.get('cuil'),
                 genero=request.POST.get('genero'),
                 edad=int(request.POST.get('edad')),
+                email=request.POST.get('email'),
                 fecha_nacimiento=request.POST.get('fecha_nacimiento'),
                 estado_civil=request.POST.get('estado_civil'),
                 tiene_hijos=request.POST.get('tiene_hijos') == 'true',
@@ -175,19 +283,21 @@ def api_crear_empleado(request):
                 numero_casa=request.POST.get('numero_casa', ''),
                 piso_departamento=request.POST.get('piso_departamento', ''),
                 numero_departamento=request.POST.get('numero_departamento', ''),
-                numero_emergencia=request.POST.get('numero_emergencia'),
-                position='Empleado',
+                numero_telefono=request.POST.get('numero_telefono', ''),
+                numero_emergencia=request.POST.get('numero_emergencia'),  # usando numero_telefono del formulario
+                position=request.POST.get('cargo', 'Principiante'),  # Save cargo to position field
                 is_active=True
             )
             
-            # Manejar foto de perfil si existe
             if request.FILES.get('foto_perfil'):
-                empleado.foto_perfil = request.FILES['foto_perfil']
-                empleado.save()
-            
-            # Establecer contraseña por defecto (se puede cambiar después)
-            empleado.set_password('subway2025')
-            empleado.save()
+                photo_file = request.FILES['foto_perfil']
+                file_path, processed_file = optimize_employee_photo(photo_file, empleado.employee_id)
+                
+                if file_path and processed_file:
+                    empleado.foto_perfil = processed_file
+                    empleado.foto_perfil.name = file_path  # Establecer nombre con employee_id
+                    empleado.save()
+                    print(f"[v0] Foto guardada para {empleado.employee_id} en: {file_path}")
             
             return JsonResponse({
                 'exito': True,
@@ -377,6 +487,158 @@ def api_configuracion_inicial(request):
             
         except Exception as e:
             print(f"[ERROR] Error en api_configuracion_inicial: {str(e)}")
+            return JsonResponse({
+                'exito': False,
+                'mensaje': f'Error del servidor: {str(e)}'
+            }, status=500)
+    
+    return JsonResponse({'exito': False, 'mensaje': 'Método no permitido'}, status=405)
+
+@csrf_exempt
+def api_lista_empleados(request):
+    if request.method == 'GET':
+        try:
+            # Obtener todos los empleados excepto el gerente
+            empleados = Employee.objects.filter(is_manager=False).values(
+                'employee_id', 
+                'nombre', 
+                'apellido', 
+                'dni', 
+                'position',
+                'is_active'
+            )
+            
+            empleados_list = list(empleados)
+            
+            print(f"[DEBUG] Empleados encontrados: {len(empleados_list)}")
+            for emp in empleados_list:
+                print(f"[DEBUG] - {emp['nombre']} {emp['apellido']} (ID: {emp['employee_id']})")
+            
+            return JsonResponse({
+                'exito': True,
+                'empleados': empleados_list
+            })
+        except Exception as e:
+            print(f"[ERROR] Error en api_lista_empleados: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return JsonResponse({
+                'exito': False,
+                'mensaje': f'Error del servidor: {str(e)}'
+            }, status=500)
+    
+    return JsonResponse({'exito': False, 'mensaje': 'Método no permitido'}, status=405)
+
+@csrf_exempt
+def api_desactivar_empleado(request, employee_id):
+    if request.method == 'POST':
+        try:
+            empleado = Employee.objects.get(employee_id=employee_id)
+            
+            # Cambiar el estado a inactivo en lugar de eliminar
+            empleado.is_active = False
+            empleado.save()
+            
+            return JsonResponse({
+                'exito': True,
+                'mensaje': f'Empleado {empleado.nombre} {empleado.apellido} desactivado exitosamente'
+            })
+        except Employee.DoesNotExist:
+            return JsonResponse({
+                'exito': False,
+                'mensaje': 'Empleado no encontrado'
+            }, status=404)
+        except Exception as e:
+            print(f"[ERROR] Error en api_desactivar_empleado: {str(e)}")
+            return JsonResponse({
+                'exito': False,
+                'mensaje': f'Error del servidor: {str(e)}'
+            }, status=500)
+    
+    return JsonResponse({'exito': False, 'mensaje': 'Método no permitido'}, status=405)
+
+@csrf_exempt
+def api_reactivar_empleado(request, employee_id):
+    if request.method == 'POST':
+        try:
+            empleado = Employee.objects.get(employee_id=employee_id)
+            
+            # Cambiar el estado a activo
+            empleado.is_active = True
+            empleado.save()
+            
+            return JsonResponse({
+                'exito': True,
+                'mensaje': f'Empleado {empleado.nombre} {empleado.apellido} reactivado exitosamente'
+            })
+        except Employee.DoesNotExist:
+            return JsonResponse({
+                'exito': False,
+                'mensaje': 'Empleado no encontrado'
+            }, status=404)
+        except Exception as e:
+            print(f"[ERROR] Error en api_reactivar_empleado: {str(e)}")
+            return JsonResponse({
+                'exito': False,
+                'mensaje': f'Error del servidor: {str(e)}'
+            }, status=500)
+    
+    return JsonResponse({'exito': False, 'mensaje': 'Método no permitido'}, status=405)
+
+@csrf_exempt
+def api_editar_empleado(request, employee_id):
+    if request.method == 'POST':
+        try:
+            empleado = Employee.objects.get(employee_id=employee_id)
+            
+            data = json.loads(request.body)
+            
+            # Actualizar todos los campos excepto employee_id
+            empleado.nombre = data.get('nombre', empleado.nombre)
+            empleado.apellido = data.get('apellido', empleado.apellido)
+            empleado.dni = data.get('dni', empleado.dni)
+            empleado.cuil = data.get('cuil', empleado.cuil)
+            empleado.email = data.get('email', empleado.email)
+            empleado.genero = data.get('genero', empleado.genero)
+            empleado.edad = int(data.get('edad', empleado.edad))
+            empleado.fecha_nacimiento = data.get('fecha_nacimiento', empleado.fecha_nacimiento)
+            empleado.estado_civil = data.get('estado_civil', empleado.estado_civil)
+            empleado.tiene_hijos = data.get('tiene_hijos', empleado.tiene_hijos)
+            empleado.nombre_domicilio = data.get('nombre_domicilio', empleado.nombre_domicilio)
+            empleado.numero_casa = data.get('numero_casa', empleado.numero_casa)
+            empleado.piso_departamento = data.get('piso_departamento', empleado.piso_departamento)
+            empleado.numero_departamento = data.get('numero_departamento', empleado.numero_departamento)
+            empleado.numero_emergencia = data.get('numero_telefono', empleado.numero_emergencia)  # usando numero_telefono del formulario
+            empleado.position = data.get('cargo', empleado.position)
+            empleado.is_active = data.get('is_active', empleado.is_active)
+            
+            if request.FILES.get('foto_perfil'):
+                photo_file = request.FILES['foto_perfil']
+                file_path, processed_file = optimize_employee_photo(photo_file, empleado.employee_id)
+                
+                if file_path and processed_file:
+                    empleado.foto_perfil = processed_file
+                    empleado.foto_perfil.name = file_path
+                    print(f"[v0] Foto actualizada para {empleado.employee_id} en: {file_path}")
+            
+            empleado.save()
+            
+            return JsonResponse({
+                'exito': True,
+                'mensaje': 'Empleado actualizado exitosamente',
+                'empleado': {
+                    'employee_id': empleado.employee_id,
+                    'nombre': empleado.nombre,
+                    'apellido': empleado.apellido
+                }
+            })
+        except Employee.DoesNotExist:
+            return JsonResponse({
+                'exito': False,
+                'mensaje': 'Empleado no encontrado'
+            }, status=404)
+        except Exception as e:
+            print(f"[ERROR] Error en api_editar_empleado: {str(e)}")
             return JsonResponse({
                 'exito': False,
                 'mensaje': f'Error del servidor: {str(e)}'
