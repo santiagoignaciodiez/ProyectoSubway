@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú Empleado - Gestión de Asistencia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Container Principal -->
+    <div class="max-w-md mx-auto bg-white min-h-screen flex flex-col">
+        
+        <!-- Header con logos -->
+        <div class="flex items-center justify-between p-4 bg-white">
+            <div class="w-32 h-12 flex items-center">
+                <img src="..." alt="Subway Logo" class="w-full h-full object-contain">
+            </div>
+
+            <div class="w-16 h-16 flex flex-col items-center">
+                <img src="..." alt="Logo Cadensal" class="w-12 h-12 object-contain">
+                <span class="text-xs text-gray-600 mt-1">Cadensal</span>
+            </div>
+        </div>
+
+        <!-- Información del Empleado -->
+        <div class="px-4 py-3 bg-white border-b border-gray-200">
+            <div class="flex items-start gap-3">
+
+                <div class="w-12 h-12 bg-gray-700 rounded flex items-center justify-center flex-shrink-0">
+                    <span class="text-white text-xl font-semibold" id="inicialUsuario">U</span>
+                </div>
+
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="text-sm text-gray-600">Empleado</p>
+                            <p class="text-base font-medium text-gray-900 break-words" id="nombreApellido">XXXXX XXXXX</p>
+                        </div>
+                        <div class="ml-2 flex-shrink-0">
+                            <p class="text-xs text-gray-500">Cód:</p>
+                            <p class="text-sm font-medium text-gray-700" id="codigoEmpleado">000000</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Botones del menú -->
+        <div class="flex-1 px-4 py-6 space-y-4">
+
+            <!-- Botón Asistencia -->
+            <a href="{% url 'datosasistenciaE' %}" class="block w-full">
+                <button class="w-full bg-gray-800 hover:bg-gray-700 text-white rounded-lg py-4 px-6 flex items-center gap-4 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="text-lg font-medium">Asistencia</span>
+                </button>
+            </a>
+
+            <!-- Botón Justificaciones -->
+            <a href="{% url 'justificacionesE' %}" class="block w-full">
+                <button class="w-full bg-gray-800 hover:bg-gray-700 text-white rounded-lg py-4 px-6 flex items-center gap-4 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    <span class="text-lg font-medium">Justificaciones</span>
+                </button>
+            </a>
+
+            <!-- Botón Cronograma -->
+            <a href="{% url 'cronogramaE' %}" class="block w-full">
+                <button class="w-full bg-gray-800 hover:bg-gray-700 text-white rounded-lg py-4 px-6 flex items-center gap-4 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="text-lg font-medium">Cronograma</span>
+                </button>
+            </a>
+
+            <!-- Botón Datos Propios -->
+            <a href="{% url 'datosE' %}" class="block w-full">
+                <button class="w-full bg-gray-800 hover:bg-gray-700 text-white rounded-lg py-4 px-6 flex items-center gap-4 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <span class="text-lg font-medium">Datos Propios</span>
+                </button>
+            </a>
+
+        </div>
+
+        <!-- Botón Salir -->
+        <div class="p-4 pb-6">
+            <button class="w-auto ml-auto block bg-red-500 hover:bg-red-600 text-white rounded-full py-2 px-6 font-medium transition-colors" id="logoutBtn">
+                Salir
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // Cargar información del empleado real
+        window.addEventListener('DOMContentLoaded', function () {
+            const datosEmpleado = localStorage.getItem('empleado');
+
+            if (!datosEmpleado) {
+                window.location.href = '/login/';
+                return;
+            }
+
+            const empleado = JSON.parse(datosEmpleado);
+
+            // Mostrar datos reales
+            document.getElementById('nombreApellido').textContent =
+                `${empleado.nombre} ${empleado.apellido}`;
+
+            document.getElementById('codigoEmpleado').textContent =
+                empleado.employee_id;
+
+            document.getElementById('inicialUsuario').textContent =
+                empleado.nombre.charAt(0).toUpperCase();
+        });
+
+        // Botón logout
+        document.getElementById('logoutBtn').addEventListener('click', async function () {
+            await fetch('/api/logout/', { method: 'POST' })
+            localStorage.clear();
+            window.location.href = '/login/';
+        });
+    </script>
+
+</body>
+</html>

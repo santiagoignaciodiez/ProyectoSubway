@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from datetime import datetime
+from django.utils import timezone
+
 
 class EmployeeManager(BaseUserManager):
     def generar_employee_id(self):
@@ -33,10 +35,8 @@ class Employee(AbstractBaseUser, PermissionsMixin):
     cuil = models.CharField("CUIL", max_length=11, unique=True)
     foto_perfil = models.ImageField("Foto de Perfil", upload_to='empleados/', null=True, blank=True)
     numero_telefono = models.CharField("Número de Telefono", max_length=20)
-
-    
     email = models.EmailField("Correo Electrónico", blank=True, null=True)
-    
+    codigo_biometrico = models.IntegerField("Código biométrico", unique=True, null=True, blank=True)
     setup_completo = models.BooleanField("Setup Completo", default=False)
     
     # Datos demográficos
@@ -90,6 +90,29 @@ class Employee(AbstractBaseUser, PermissionsMixin):
             self.employee_id = Employee.objects.generar_employee_id()
         super().save(*args, **kwargs)
 
+class Sancion(models.Model):
+    empleado = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    motivo = models.CharField(max_length=200)
+    fecha_inicio = models.DateField()
+    fecha_fin = models.DateField()
+    observacion = models.TextField(max_length=1200)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Sanción - {self.empleado.nombre}"
+
+
+class Amonestacion(models.Model):
+    empleado = models.ForeignKey('Employee', on_delete=models.CASCADE, related_name='amonestaciones')
+    motivo = models.CharField(max_length=200)
+    fecha_inicio = models.DateField()
+    fecha_fin = models.DateField(null=True, blank=True)
+    observacion = models.TextField(blank=True)
+    creado = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Amonestación {self.motivo} - {self.empleado.employee_id}"
+
 
 class AttendanceRecord(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='registros_asistencia', verbose_name="Empleado")
@@ -104,3 +127,18 @@ class AttendanceRecord(models.Model):
     
     def __str__(self):
         return f"{self.employee.nombre} - {self.date}"
+    
+
+
+class Asistencia(models.Model):
+    empleado = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField()
+    tipo = models.CharField(max_length=10, choices=[('entrada', 'Entrada'), ('salida', 'Salida')])
+    created_at = models.DateTimeField(default=timezone.now)  # ← SIN auto_now_add
+
+    def __str__(self):
+        return f"{self.empleado.nombre} - {self.tipo} - {self.timestamp}"
+
+
+
+

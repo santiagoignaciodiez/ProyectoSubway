@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronograma Semanal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-4 md:p-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="flex items-center mb-6">
+            <button onclick="window.history.back()" class="mr-4">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+            </button>
+            <h1 class="text-xl font-semibold">Cronograma</h1>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <div class="flex border-b mb-6">
+            <button onclick="switchTab('cargar')" id="tab-cargar" class="px-6 py-3 font-semibold text-green-600 border-b-2 border-green-600">
+                Cargar
+            </button>
+            <button onclick="switchTab('importar')" id="tab-importar" class="px-6 py-3 font-semibold text-gray-500 hover:text-gray-700">
+                Importar Excel
+            </button>
+        </div>
+
+        <!-- Tab Content: Cargar -->
+        <div id="content-cargar" class="tab-content">
+            <!-- Added week navigation controls -->
+            <div class="mb-6 flex items-center justify-center gap-4">
+                <button onclick="cambiarSemana(-1)" class="p-2 hover:bg-gray-100 rounded-full transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <div class="text-center">
+                    <p class="text-sm text-gray-600">Semana <span id="numeroSemana"></span> - <span id="mesAnio"></span></p>
+                    <p class="font-semibold" id="rangoFechas"></p>
+                </div>
+                <button onclick="cambiarSemana(1)" class="p-2 hover:bg-gray-100 rounded-full transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Alert para errores -->
+            <div id="errorAlert" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                <span id="errorMessage"></span>
+            </div>
+
+            <!--Tabla de Cronograma -->
+            <div class="bg-white rounded-lg shadow overflow-x-auto">
+                <table class="w-full min-w-max">
+                    <thead class="bg-gray-100 border-b">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 sticky left-0 bg-gray-100 z-10">Personal</th>
+                            <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700">Lun</th>
+                            <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700">Mar</th>
+                            <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700">Mié</th>
+                            <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700">Jue</th>
+                            <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700">Vie</th>
+                            <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700">Sáb</th>
+                            <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700">Dom</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cronogramaBody">
+                        <!-- Se generan 6 filas dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Botones -->
+            <div class="flex justify-end gap-4 mt-6">
+                <button onclick="cancelar()" class="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">
+                    Cancelar
+                </button>
+                <button onclick="guardarCronograma()" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                    Guardar
+                </button>
+            </div>
+        </div>
+
+        <!-- Tab Content: Importar Excel -->
+        <div id="content-importar" class="tab-content hidden">
+            <!-- Formulario para subir Excel -->
+            <form id="excelForm" class="bg-white rounded-lg shadow p-6 mb-6" onsubmit="return handleExcelUpload(event)">
+                <div class="mb-4 text-center">
+                    <p class="text-sm text-gray-600 mb-2">Semana:</p>
+                    <div class="flex justify-center gap-4 mb-4">
+                        <div>
+                            <label class="text-sm text-gray-600">Inicio:</label>
+                            <input type="date" id="semana_inicio" name="semana_inicio" required class="block px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600">Fin:</label>
+                            <input type="date" id="semana_fin" name="semana_fin" required class="block px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Archivo Excel</label>
+                    <input type="file" id="excel" name="excel" accept=".xlsx,.xls" required class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <p class="text-xs text-gray-500 mt-1">Formato: Empl | Lun | Mar | Mier | Jue | Vie | Sab | Dom</p>
+                </div>
+
+                <div class="flex justify-end gap-4">
+                    <button type="button" onclick="cancelar()" class="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">
+                        Cargar Excel
+                    </button>
+                </div>
+            </form>
+
+            <!--Tabla para mostrar el cronograma importado -->
+            <div id="excelPreview" class="hidden">
+                <div class="mb-4 text-center">
+                    <p class="text-sm text-gray-600">Semana:</p>
+                    <p id="semanaDisplay" class="font-semibold"></p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-100 border-b">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Empl</th>
+                                <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700">Lun</th>
+                                <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700">Mar</th>
+                                <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700">Mié</th>
+                                <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700">Jue</th>
+                                <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700">Vie</th>
+                                <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700">Sáb</th>
+                                <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700">Dom</th>
+                            </tr>
+                        </thead>
+                        <tbody id="excelTableBody">
+                            <!-- {% for empleado, dias in empleados.items %}
+                            <tr class="border-b even:bg-gray-50">
+                                <td class="px-4 py-3 font-medium">{{ empleado }}</td>
+                                <td class="px-4 py-3 text-center">{{ dias.lun }}</td>
+                                <td class="px-4 py-3 text-center">{{ dias.mar }}</td>
+                                <td class="px-4 py-3 text-center">{{ dias.mie }}</td>
+                                <td class="px-4 py-3 text-center">{{ dias.jue }}</td>
+                                <td class="px-4 py-3 text-center">{{ dias.vie }}</td>
+                                <td class="px-4 py-3 text-center">{{ dias.sab }}</td>
+                                <td class="px-4 py-3 text-center">{{ dias.dom }}</td>
+                            </tr>
+                            {% endfor %} -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="flex justify-end mt-6">
+                    <button onclick="guardarExcelCronograma()" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                        Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+    const FECHA_ACTUAL = new Date("{{ hoy|date:'Y-m-d' }}");
+
+    const empleados = [
+        { id: 1, nombre: 'Juan Pérez', codigo: '250001' },
+        { id: 2, nombre: 'María García', codigo: '250002' },
+        { id: 3, nombre: 'Carlos López', codigo: '250003' },
+        { id: 4, nombre: 'Ana Martínez', codigo: '250004' },
+        { id: 5, nombre: 'Pedro Rodríguez', codigo: '250005' },
+        { id: 6, nombre: 'Laura Fernández', codigo: '250006' },
+        { id: 7, nombre: 'Diego Sánchez', codigo: '250007' },
+        { id: 8, nombre: 'Sofia Torres', codigo: '250008' }
+    ];
+
+    const dias = ['lun', 'mar', 'mie', 'jue', 'vie', 'sab', 'dom'];
+
+    let semanaActual = new Date(FECHA_ACTUAL);
+
+
+    /* -----------------------------------------
+       NUEVA FUNCIÓN → chequea si la semana es pasada
+       ----------------------------------------- */
+    function esSemanaPasada(inicioSemana) {
+        const hoy = new Date();
+        hoy.setHours(0,0,0,0);
+
+        const inicio = new Date(inicioSemana);
+        inicio.setHours(0,0,0,0);
+
+        return inicio < hoy && (hoy - inicio) > 7 * 24 * 60 * 60 * 1000;
+    }
+
+
+    /* -----------------------------------------
+       NUEVA FUNCIÓN → bloquea o desbloquea inputs
+       ----------------------------------------- */
+    function bloquearSemanaPasada(pasada) {
+        const inputs = document.querySelectorAll("input, select");
+
+        inputs.forEach(el => {
+            if (el.id.startsWith("empleado_") ||
+                el.id.includes("inicio") ||
+                el.id.includes("fin") ||
+                el.id.includes("franco") ||
+                el.id.includes("relevo") ||
+                el.id.includes("reemplazo")) {
+
+                el.disabled = pasada;
+                if (pasada) {
+                    el.classList.add("opacity-50", "cursor-not-allowed");
+                } else {
+                    el.classList.remove("opacity-50", "cursor-not-allowed");
+                }
+            }
+        });
+
+        // Deshabilitar botones Guardar
+        document.querySelectorAll("button").forEach(btn => {
+            if (btn.textContent.includes("Guardar")) btn.disabled = pasada;
+        });
+    }
+
+
+    function cambiarSemana(direccion) {
+        semanaActual.setDate(semanaActual.getDate() + (direccion * 7));
+        actualizarVisualizacionSemana();
+    }
+
+
+    function actualizarVisualizacionSemana() {
+        const inicioSemana = new Date(semanaActual);
+        const diaActual = inicioSemana.getDay();
+        const diferencia = diaActual === 0 ? -6 : 1 - diaActual;
+        inicioSemana.setDate(inicioSemana.getDate() + diferencia);
+
+        const finSemana = new Date(inicioSemana);
+        finSemana.setDate(finSemana.getDate() + 6);
+
+        const formatoFecha = (fecha) => {
+            const dia = String(fecha.getDate()).padStart(2, '0');
+            const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+            return `${dia}/${mes}/${fecha.getFullYear()}`;
+        };
+
+        const meses = [
+            'Enero','Febrero','Marzo','Abril','Mayo','Junio',
+            'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'
+        ];
+
+        // Actualiza texto visible
+        document.getElementById('rangoFechas').textContent =
+            `${formatoFecha(inicioSemana)} - ${formatoFecha(finSemana)}`;
+
+        const primerDiaMes = new Date(inicioSemana.getFullYear(), inicioSemana.getMonth(), 1);
+        const diasTranscurridos = Math.floor((inicioSemana - primerDiaMes) / (1000 * 60 * 60 * 24));
+        document.getElementById('numeroSemana').textContent = Math.floor(diasTranscurridos / 7) + 1;
+
+        document.getElementById('mesAnio').textContent =
+            `${meses[inicioSemana.getMonth()]} ${inicioSemana.getFullYear()}`;
+
+        // NUEVO: bloquear edición si es semana pasada
+        const pasada = esSemanaPasada(inicioSemana);
+        bloquearSemanaPasada(pasada);
+
+        if (!pasada) {
+            bloquearDiasPasados(inicioSemana);
+        }
+    }
+
+    function bloquearDiasPasados(inicioSemana) {
+    const hoy = new Date();
+    hoy.setHours(0,0,0,0);
+
+    dias.forEach((dia, index) => {
+        const fechaDia = new Date(inicioSemana);
+        fechaDia.setDate(inicioSemana.getDate() + index);
+        fechaDia.setHours(0,0,0,0);
+
+        const esPasado = fechaDia < hoy;
+
+        for (let fila = 0; fila < 6; fila++) {
+            const prefix = `${fila}_${dia}`;
+
+            const ids = [
+                `inicio_${prefix}`,
+                `fin_${prefix}`,
+                `franco_${prefix}`,
+                `relevo_${prefix}`,
+                `reemplazo_${prefix}`
+            ];
+
+            ids.forEach(id => {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.disabled = esPasado;
+                    if (esPasado) {
+                        input.classList.add("opacity-50", "cursor-not-allowed");
+                    } else {
+                        input.classList.remove("opacity-50", "cursor-not-allowed");
+                    }
+                }
+            });
+        }
+    });
+}
+
+        function switchTab(tab) {
+            // Update tab buttons
+            const tabs = ['cargar', 'importar'];
+            tabs.forEach(t => {
+                const tabBtn = document.getElementById(`tab-${t}`);
+                const content = document.getElementById(`content-${t}`);
+                
+                if (t === tab) {
+                    tabBtn.classList.add('text-green-600', 'border-b-2', 'border-green-600');
+                    tabBtn.classList.remove('text-gray-500');
+                    content.classList.remove('hidden');
+                } else {
+                    tabBtn.classList.remove('text-green-600', 'border-b-2', 'border-green-600');
+                    tabBtn.classList.add('text-gray-500');
+                    content.classList.add('hidden');
+                }
+            });
+        }
+
+        function handleExcelUpload(event) {
+            event.preventDefault();
+            
+            const fileInput = document.getElementById('excel');
+            const file = fileInput.files[0];
+            const semanaInicio = document.getElementById('semana_inicio').value;
+            const semanaFin = document.getElementById('semana_fin').value;
+            
+            if (!file) {
+                alert('Por favor seleccione un archivo Excel');
+                return false;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+                    
+                    // Display the data
+                    displayExcelData(jsonData, semanaInicio, semanaFin);
+                } catch (error) {
+                    alert('Error al leer el archivo Excel: ' + error.message);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+            
+            return false;
+        }
+
+        function displayExcelData(data, semanaInicio, semanaFin) {
+            const preview = document.getElementById('excelPreview');
+            const tbody = document.getElementById('excelTableBody');
+            const semanaDisplay = document.getElementById('semanaDisplay');
+            
+            // Format dates
+            const inicio = new Date(semanaInicio).toLocaleDateString('es-ES');
+            const fin = new Date(semanaFin).toLocaleDateString('es-ES');
+            semanaDisplay.textContent = `${inicio} - ${fin}`;
+            
+            // Clear previous data
+            tbody.innerHTML = '';
+            
+            // Populate table
+            data.forEach((row, index) => {
+                const tr = document.createElement('tr');
+                tr.className = index % 2 === 0 ? 'border-b bg-white' : 'border-b bg-gray-50';
+                
+                const empleNombre = row['Empl'] || row['Empleado'] || '';
+                tr.innerHTML = `
+                    <td class="px-4 py-3 font-medium">${empleNombre}</td>
+                    <td class="px-4 py-3 text-center">${row['Lun'] || '-'}</td>
+                    <td class="px-4 py-3 text-center">${row['Mar'] || '-'}</td>
+                    <td class="px-4 py-3 text-center">${row['Mier'] || row['Mié'] || '-'}</td>
+                    <td class="px-4 py-3 text-center">${row['Jue'] || '-'}</td>
+                    <td class="px-4 py-3 text-center">${row['Vie'] || '-'}</td>
+                    <td class="px-4 py-3 text-center">${row['Sab'] || row['Sáb'] || '-'}</td>
+                    <td class="px-4 py-3 text-center">${row['Dom'] || '-'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            // Show preview
+            preview.classList.remove('hidden');
+            document.getElementById('excelForm').classList.add('hidden');
+        }
+
+        function guardarExcelCronograma() {
+            // Aquí iría la lógica para enviar los datos al backend
+            alert('Cronograma de Excel guardado exitosamente!');
+            // En Django esto se manejaría con el form post
+        }
+
+        // Generar las 6 filas del cronograma
+        function inicializarCronograma() {
+            const tbody = document.getElementById('cronogramaBody');
+            
+            for (let fila = 0; fila < 6; fila++) {
+                const tr = document.createElement('tr');
+                tr.className = 'border-b hover:bg-gray-50';
+                tr.innerHTML = generarFilaHTML(fila);
+                tbody.appendChild(tr);
+            }
+
+            // Agregar listeners
+            actualizarEventListeners();
+        }
+
+        function generarFilaHTML(fila) {
+            let html = `
+                <td class="px-4 py-3 sticky left-0 bg-white">
+                    <select id="empleado_${fila}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" onchange="actualizarEmpleadosDisponibles()">
+                        <option value="">Seleccionar empleado...</option>
+                        ${empleados.map(emp => `<option value="${emp.id}">${emp.nombre}</option>`).join('')}
+                    </select>
+                </td>
+            `;
+
+            dias.forEach(dia => {
+                html += `
+                    <td class="px-2 py-3">
+                        <div class="space-y-2 min-w-[180px]">
+                            <!-- Checkbox Franco -->
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" id="franco_${fila}_${dia}" class="mr-2 w-4 h-4 text-green-600" onchange="toggleFranco(${fila}, '${dia}')">
+                                <span class="text-gray-700">Franco</span>
+                            </label>
+
+                            <!-- Horarios -->
+                            <div id="horarios_${fila}_${dia}" class="space-y-1">
+                                <input type="time" id="inicio_${fila}_${dia}" class="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Inicio">
+                                <input type="time" id="fin_${fila}_${dia}" class="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Fin">
+                            </div>
+
+                            <!-- Checkbox Relevo -->
+                            <label class="flex items-center text-sm">
+                                <input type="checkbox" id="relevo_${fila}_${dia}" class="mr-2 w-4 h-4 text-blue-600" onchange="toggleRelevo(${fila}, '${dia}')">
+                                <span class="text-gray-700">Relevo</span>
+                            </label>
+
+                            <!-- Campo de reemplazo -->
+                            <div id="reemplazo_container_${fila}_${dia}" class="hidden">
+                                <select id="reemplazo_${fila}_${dia}" class="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Seleccionar...</option>
+                                    ${empleados.map(emp => `<option value="${emp.id}">${emp.nombre}</option>`).join('')}
+                                </select>
+                            </div>
+                        </div>
+                    </td>
+                `;
+            });
+
+            return html;
+        }
+
+        function toggleFranco(fila, dia) {
+            const francoChecked = document.getElementById(`franco_${fila}_${dia}`).checked;
+            const horariosDiv = document.getElementById(`horarios_${fila}_${dia}`);
+            const inicioInput = document.getElementById(`inicio_${fila}_${dia}`);
+            const finInput = document.getElementById(`fin_${fila}_${dia}`);
+
+            if (francoChecked) {
+                // Deshabilitar horarios si está marcado como Franco
+                inicioInput.disabled = true;
+                finInput.disabled = true;
+                inicioInput.value = '';
+                finInput.value = '';
+                horariosDiv.classList.add('opacity-50');
+            } else {
+                // Habilitar horarios
+                inicioInput.disabled = false;
+                finInput.disabled = false;
+                horariosDiv.classList.remove('opacity-50');
+            }
+        }
+
+        function toggleRelevo(fila, dia) {
+            const relevoChecked = document.getElementById(`relevo_${fila}_${dia}`).checked;
+            const reemplazoContainer = document.getElementById(`reemplazo_container_${fila}_${dia}`);
+
+            if (relevoChecked) {
+                reemplazoContainer.classList.remove('hidden');
+            } else {
+                reemplazoContainer.classList.add('hidden');
+                document.getElementById(`reemplazo_${fila}_${dia}`).value = '';
+            }
+        }
+
+        function actualizarEmpleadosDisponibles() {
+            // Obtener todos los empleados seleccionados
+            const empleadosSeleccionados = [];
+            for (let fila = 0; fila < 6; fila++) {
+                const select = document.getElementById(`empleado_${fila}`);
+                if (select.value) {
+                    empleadosSeleccionados.push(select.value);
+                }
+            }
+
+            // Actualizar cada select para deshabilitar empleados ya seleccionados
+            for (let fila = 0; fila < 6; fila++) {
+                const select = document.getElementById(`empleado_${fila}`);
+                const valorActual = select.value;
+
+                // Reconstruir opciones
+                select.innerHTML = '<option value="">Seleccionar empleado...</option>';
+                empleados.forEach(emp => {
+                    const option = document.createElement('option');
+                    option.value = emp.id;
+                    option.textContent = emp.nombre;
+                    
+                    // Deshabilitar si ya está seleccionado en otra fila
+                    if (empleadosSeleccionados.includes(emp.id.toString()) && emp.id.toString() !== valorActual) {
+                        option.disabled = true;
+                        option.textContent += ' (Ya asignado)';
+                    }
+                    
+                    select.appendChild(option);
+                });
+
+                // Restaurar valor actual
+                select.value = valorActual;
+            }
+        }
+
+        function actualizarEventListeners() {
+            // Esta función se llama después de inicializar para asegurar que todos los eventos estén conectados
+            actualizarEmpleadosDisponibles();
+        }
+
+        function mostrarError(mensaje) {
+            const errorAlert = document.getElementById('errorAlert');
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = mensaje;
+            errorAlert.classList.remove('hidden');
+            
+            // Scroll hacia el error
+            errorAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Ocultar después de 5 segundos
+            setTimeout(() => {
+                errorAlert.classList.add('hidden');
+            }, 5000);
+        }
+
+        function validarCronograma() {
+            // Validar que no haya horarios incompletos
+            for (let fila = 0; fila < 6; fila++) {
+                const empleadoSelect = document.getElementById(`empleado_${fila}`);
+                
+                // Solo validar si hay un empleado seleccionado
+                if (empleadoSelect.value) {
+                    for (const dia of dias) {
+                        const francoChecked = document.getElementById(`franco_${fila}_${dia}`).checked;
+                        const inicio = document.getElementById(`inicio_${fila}_${dia}`).value;
+                        const fin = document.getElementById(`fin_${fila}_${dia}`).value;
+                        const relevoChecked = document.getElementById(`relevo_${fila}_${dia}`).checked;
+                        const reemplazo = document.getElementById(`reemplazo_${fila}_${dia}`).value;
+
+                        // Si no es franco, debe tener horarios completos
+                        if (!francoChecked) {
+                            if (!inicio || !fin) {
+                                mostrarError(`Fila ${fila + 1}, día ${dia.toUpperCase()}: Debe completar inicio y fin del horario o marcar como Franco.`);
+                                return false;
+                            }
+                            
+                            // Validar que fin sea mayor que inicio
+                            if (inicio >= fin) {
+                                mostrarError(`Fila ${fila + 1}, día ${dia.toUpperCase()}: La hora de fin debe ser mayor que la hora de inicio.`);
+                                return false;
+                            }
+                        }
+
+                        // Si está marcado como relevo, debe seleccionar un empleado de reemplazo
+                        if (relevoChecked && !reemplazo) {
+                            mostrarError(`Fila ${fila + 1}, día ${dia.toUpperCase()}: Debe seleccionar un empleado para el relevo.`);
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        function recolectarDatos() {
+            const cronograma = [];
+            
+            for (let fila = 0; fila < 6; fila++) {
+                const empleadoId = document.getElementById(`empleado_${fila}`).value;
+                
+                if (empleadoId) {
+                    const empleadoData = {
+                        empleadoId: empleadoId,
+                        dias: {}
+                    };
+
+                    dias.forEach(dia => {
+                        const franco = document.getElementById(`franco_${fila}_${dia}`).checked;
+                        const inicio = document.getElementById(`inicio_${fila}_${dia}`).value;
+                        const fin = document.getElementById(`fin_${fila}_${dia}`).value;
+                        const relevo = document.getElementById(`relevo_${fila}_${dia}`).checked;
+                        const reemplazo = document.getElementById(`reemplazo_${fila}_${dia}`).value;
+
+                        empleadoData.dias[dia] = {
+                            franco: franco,
+                            inicio: franco ? null : inicio,
+                            fin: franco ? null : fin,
+                            relevo: relevo,
+                            reemplazadoPor: relevo ? reemplazo : null
+                        };
+                    });
+
+                    cronograma.push(empleadoData);
+                }
+            }
+
+            return cronograma;
+        }
+
+        function guardarCronograma() {
+            // Validar antes de guardar
+            if (!validarCronograma()) {
+                return;
+            }
+
+            // Recolectar datos
+            const datos = recolectarDatos();
+
+            if (datos.length === 0) {
+                mostrarError('Debe asignar al menos un empleado al cronograma.');
+                return;
+            }
+
+            // Aquí iría la lógica para enviar los datos al backend
+            console.log('Datos del cronograma:', datos);
+            
+            alert('Cronograma guardado exitosamente!');
+            // window.location.href = 'cronograma.html'; // Redirigir después de guardar
+        }
+
+        function cancelar() {
+            if (confirm('¿Está seguro que desea cancelar? Se perderán los cambios no guardados.')) {
+                window.history.back();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            actualizarVisualizacionSemana();
+            inicializarCronograma();
+        });
+    </script>
+</body>
+</html>
+

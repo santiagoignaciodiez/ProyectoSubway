@@ -8,8 +8,8 @@ from datetime import date
 
 # Crear o actualizar el usuario empleado
 try:
-    empleado = Employee.objects.get(employee_id="Empleado")
-    empleado.set_password("arielozuna")
+    empleado = Employee.objects.get(employee_id="Empleado2")
+    empleado.set_password("1234")
     empleado.is_manager = False
     empleado.is_active = True
     empleado.save()
@@ -34,7 +34,7 @@ except Employee.DoesNotExist:
         is_manager=False,
         is_active=True
     )
-    empleado.set_password("arielozuna")
+    empleado.set_password("1234")
     empleado.save()
     print("✓ Empleado creado exitosamente")
 

@@ -174,7 +174,6 @@
                         <span>W</span>
                         <span>A</span>
                         <span>Y</span>
-                        <span class="arrow">®</span>
                     </div>
                 </div>
             </div>
@@ -185,35 +184,38 @@
             Introduce tu ID de empleado y contraseña para iniciar sesión en el dispositivo
         </p>
 
-        <form id="loginForm">
-            <div class="form-group">
-                <input 
-                    type="text" 
-                    class="input" 
-                    placeholder="ID de Empleado" 
-                    id="employee_id"
-                    required
-                    autocomplete="username"
-                >
-            </div>
+        <form method="POST" action="{% url 'login' %}">
+    {% csrf_token %}
 
-            <div class="form-group">
-                <input 
-                    type="password" 
-                    class="input" 
-                    placeholder="Contraseña" 
-                    id="password"
-                    required
-                    autocomplete="current-password"
-                >
-            </div>
+    <div class="form-group">
+        <input 
+            type="text" 
+            class="input" 
+            placeholder="ID de Empleado" 
+            name="employee_id"
+            required
+        >
+    </div>
 
-            <div id="errorMessage" class="error-message"></div>
+    <div class="form-group">
+        <input 
+            type="password" 
+            class="input" 
+            placeholder="Contraseña" 
+            name="password"
+            required
+        >
+    </div>
 
-            <button type="submit" class="button" id="submitBtn">
-                Continuar
-            </button>
-        </form>
+    {% if error %}
+        <div class="error-message">{{ error }}</div>
+    {% endif %}
+
+    <button type="submit" class="button">
+        Continuar
+    </button>
+</form>
+
 
         <div class="forgot-password">
             <!-- Updated forgot password link to go to recovery page -->
@@ -221,62 +223,7 @@
         </div>
     </div>
 
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const id_empleado = document.getElementById('employee_id').value;
-            const contrasena = document.getElementById('password').value;
-            const submitBtn = document.getElementById('submitBtn');
-            const errorMessage = document.getElementById('errorMessage');
-            
-            errorMessage.textContent = '';
-            errorMessage.style.display = 'none';
-            
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Iniciando sesión...';
-            
-            try {
-                const response = await fetch('/api/login/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        id_empleado: id_empleado,
-                        contrasena: contrasena
-                    })
-                });
-                
-                const datos = await response.json();
-                
-                if (response.ok && datos.exito) {
-                    if (datos.requiere_setup) {
-                        window.location.href = '/configuracion-inicial/';
-                        return;
-                    }
-                    
-                    localStorage.setItem('token', datos.token);
-                    localStorage.setItem('empleado', JSON.stringify(datos.empleado));
-                    
-                    if (datos.empleado.es_gerente) {
-                        window.location.href = '/menuGerente/';
-                    } else {
-                        window.location.href = '/asistencia/';
-                    }
-                } else {
-                    errorMessage.textContent = datos.mensaje || 'Error al iniciar sesión';
-                    errorMessage.style.display = 'block';
-                }
-            } catch (error) {
-                console.error('Error de login:', error);
-                errorMessage.textContent = 'Error de conexión. Por favor intenta de nuevo.';
-                errorMessage.style.display = 'block';
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Continuar';
-            }
-        });
-    </script>
+   
+
 </body>
 </html>

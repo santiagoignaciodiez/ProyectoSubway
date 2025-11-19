@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -27,11 +28,6 @@
             padding: 40px 20px;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
         .back-button {
             position: absolute;
             top: 20px;
@@ -42,10 +38,12 @@
             cursor: pointer;
             color: #000000;
             padding: 8px;
+            text-decoration: none;
         }
 
-        .back-button:hover {
-            color: #009639;
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
         }
 
         .title {
@@ -53,7 +51,6 @@
             font-weight: 600;
             color: #000000;
             margin-bottom: 8px;
-            line-height: 1.3;
         }
 
         .logo-container {
@@ -79,12 +76,6 @@
         .subway-text span:nth-child(4) { color: #009639; }
         .subway-text span:nth-child(5) { color: #009639; }
         .subway-text span:nth-child(6) { color: #009639; }
-
-        .arrow {
-            color: #009639;
-            font-size: 48px;
-            margin-left: -8px;
-        }
 
         .section-title {
             font-size: 16px;
@@ -122,10 +113,6 @@
             background-color: #ffffff;
         }
 
-        .input::placeholder {
-            color: #999999;
-        }
-
         .button {
             width: 100%;
             padding: 16px;
@@ -137,21 +124,6 @@
             border-radius: 8px;
             cursor: pointer;
             margin-top: 24px;
-            transition: background-color 0.2s;
-        }
-
-        .button:hover {
-            background-color: #1a1a1a;
-        }
-
-        .button:active {
-            background-color: #000000;
-            transform: scale(0.98);
-        }
-
-        .button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
         }
 
         .success-message {
@@ -162,7 +134,6 @@
             border-radius: 8px;
             margin-bottom: 16px;
             text-align: center;
-            font-size: 14px;
         }
 
         .error-message {
@@ -173,16 +144,11 @@
             border-radius: 8px;
             margin-bottom: 16px;
             text-align: center;
-            font-size: 14px;
-        }
-
-        .hidden {
-            display: none;
         }
     </style>
 </head>
 <body>
-    <button class="back-button" onclick="window.location.href='/login/'">←</button>
+    <a href="{% url 'login' %}" class="back-button">←</a>
 
     <div class="container">
         <div class="header">
@@ -197,7 +163,7 @@
                         <span>W</span>
                         <span>A</span>
                         <span>Y</span>
-                        <span class="arrow">®</span>
+                        <span>®</span>
                     </div>
                 </div>
             </div>
@@ -208,82 +174,30 @@
             Introduce tu correo electrónico para solicitar una nueva contraseña. Se enviará un correo al administrador.
         </p>
 
-        <div id="successMessage" class="success-message hidden"></div>
-        <div id="errorMessage" class="error-message hidden"></div>
+        {% if messages %}
+            {% for message in messages %}
+            <div class="{% if message.level_tag == 'success' %}success-message{% else %}error-message{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
 
-        <!-- simplificado para solo pedir correo electrónico -->
-        <form id="recoveryForm">
+        <form method="post" action="{% url 'recuperar_contrasena' %}">
+            {% csrf_token %}
             <div class="form-group">
                 <input 
                     type="email" 
                     class="input" 
                     placeholder="tu@email.com" 
-                    id="email"
+                    name="email"
                     required
                 >
             </div>
 
-            <button type="submit" class="button" id="submitBtn">
+            <button type="submit" class="button">
                 Enviar Solicitud
             </button>
         </form>
     </div>
-
-    <script>
-        document.getElementById('recoveryForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('email').value;
-            const submitBtn = document.getElementById('submitBtn');
-            const errorMessage = document.getElementById('errorMessage');
-            const successMessage = document.getElementById('successMessage');
-            
-            errorMessage.classList.add('hidden');
-            successMessage.classList.add('hidden');
-            
-            if (!email) {
-                errorMessage.textContent = 'Por favor ingresa tu correo electrónico';
-                errorMessage.classList.remove('hidden');
-                return;
-            }
-            
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Enviando solicitud...';
-            
-            try {
-                const response = await fetch('/api/recuperar-contrasena/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        email: email
-                    })
-                });
-                
-                const datos = await response.json();
-                
-                if (response.ok && datos.exito) {
-                    successMessage.textContent = datos.mensaje;
-                    successMessage.classList.remove('hidden');
-                    document.getElementById('recoveryForm').reset();
-                    
-                    setTimeout(() => {
-                        window.location.href = '/login/';
-                    }, 3000);
-                } else {
-                    errorMessage.textContent = datos.mensaje || 'Error al enviar la solicitud';
-                    errorMessage.classList.remove('hidden');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                errorMessage.textContent = 'Error de conexión. Por favor intenta de nuevo.';
-                errorMessage.classList.remove('hidden');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Enviar Solicitud';
-            }
-        });
-    </script>
 </body>
 </html>

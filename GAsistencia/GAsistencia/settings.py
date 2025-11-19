@@ -130,6 +130,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'myapp.Employee'
 
 
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
@@ -154,3 +155,10 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'santiagoignaciodiez@gmail.com'
 EMAIL_HOST_PASSWORD =' gvjs yiqd arev ethk'
 DEFAULT_FROM_EMAIL = 'Sistema Subway <santiagoignaciodiez@gmail.com>'
+
+
+ZKTECO = {
+    "ip": "192.168.1.201",   # ← LA IP QUE OBTUVISTE
+    "port": 4370,            # puerto por defecto
+    "timeout": 5,
+}

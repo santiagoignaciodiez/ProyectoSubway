@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronograma - Vista Empleado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm p-4 flex items-center">
+        <button onclick="window.history.back()" class="mr-4">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+        </button>
+        <h1 class="text-xl font-semibold">Cronograma</h1>
+    </header>
+
+    <div class="max-w-7xl mx-auto p-4">
+        <!-- Week Navigation -->
+        <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
+            <div class="flex items-center justify-between">
+                <button onclick="previousWeek()" class="p-2 hover:bg-gray-100 rounded-lg transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                
+                <div class="text-center">
+                    <div class="text-sm text-gray-600">Semana <span id="weekNumber">1</span></div>
+                    <div class="font-semibold text-lg" id="monthYear">Noviembre 2025</div>
+                    <div class="text-sm text-gray-600" id="dateRange">10/11/2025 - 16/11/2025</div>
+                </div>
+
+                <button onclick="nextWeek()" class="p-2 hover:bg-gray-100 rounded-lg transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Schedule Table -->
+        <div class="bg-white rounded-lg shadow-sm overflow-x-auto">
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="border border-gray-300 p-3 text-left font-semibold">Personal</th>
+                        <th class="border border-gray-300 p-3 text-center font-semibold">Lun</th>
+                        <th class="border border-gray-300 p-3 text-center font-semibold">Mar</th>
+                        <th class="border border-gray-300 p-3 text-center font-semibold">Mié</th>
+                        <th class="border border-gray-300 p-3 text-center font-semibold">Jue</th>
+                        <th class="border border-gray-300 p-3 text-center font-semibold">Vie</th>
+                        <th class="border border-gray-300 p-3 text-center font-semibold">Sáb</th>
+                        <th class="border border-gray-300 p-3 text-center font-semibold">Dom</th>
+                    </tr>
+                </thead>
+                <tbody id="scheduleBody">
+                    <!-- Row 1 -->
+                    <tr class="hover:bg-gray-50">
+                        <td class="border border-gray-300 p-3 font-medium">Santiago Díez</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">09:00 - 17:00</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">09:00 - 17:00</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm text-blue-600 font-semibold">Franco</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">09:00 - 17:00</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">09:00 - 17:00</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm text-blue-600 font-semibold">Franco</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">09:00 - 17:00</td>
+                    </tr>
+                    <!-- Row 2 -->
+                    <tr class="hover:bg-gray-50">
+                        <td class="border border-gray-300 p-3 font-medium">María García</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">08:00 - 16:00</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm text-blue-600 font-semibold">Franco</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">08:00 - 16:00</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">08:00 - 16:00</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm text-blue-600 font-semibold">Franco</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">08:00 - 16:00</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">08:00 - 16:00</td>
+                    </tr>
+                    <!-- Row 3 -->
+                    <tr class="hover:bg-gray-50">
+                        <td class="border border-gray-300 p-3 font-medium">Carlos López</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">13:00 - 21:00</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">13:00 - 21:00</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">13:00 - 21:00</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm text-blue-600 font-semibold">Franco</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">13:00 - 21:00</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">13:00 - 21:00</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm text-blue-600 font-semibold">Franco</td>
+                    </tr>
+                    <!-- Row 4 -->
+                    <tr class="hover:bg-gray-50">
+                        <td class="border border-gray-300 p-3 font-medium">Ana Martínez</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm text-blue-600 font-semibold">Franco</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">09:00 - 17:00</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">09:00 - 17:00</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">09:00 - 17:00</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">09:00 - 17:00</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm text-blue-600 font-semibold">Franco</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">09:00 - 17:00</td>
+                    </tr>
+                    <!-- Row 5 -->
+                    <tr class="hover:bg-gray-50">
+                        <td class="border border-gray-300 p-3 font-medium">Pedro Fernández</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">08:00 - 16:00</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">08:00 - 16:00</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm text-blue-600 font-semibold">Franco</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">08:00 - 16:00</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">08:00 - 16:00</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">08:00 - 16:00</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm text-blue-600 font-semibold">Franco</td>
+                    </tr>
+                    <!-- Row 6 -->
+                    <tr class="hover:bg-gray-50">
+                        <td class="border border-gray-300 p-3 font-medium">Laura Rodríguez</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">14:00 - 22:00</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm text-blue-600 font-semibold">Franco</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">14:00 - 22:00</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">14:00 - 22:00</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm text-blue-600 font-semibold">Franco</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">14:00 - 22:00</td>
+                        <td class="border border-gray-300 p-3 text-center text-sm">14:00 - 22:00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Info note -->
+    
+    </div>
+
+    <script>
+        let currentWeekStart = new Date(2025, 10, 10); // 10 de noviembre de 2025 (mes 10 = noviembre)
+
+        function updateWeekDisplay() {
+            const weekEnd = new Date(currentWeekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+
+            // Calcular número de semana del mes
+            const firstDayOfMonth = new Date(currentWeekStart.getFullYear(), currentWeekStart.getMonth(), 1);
+            const weekNumber = Math.ceil((currentWeekStart.getDate() + firstDayOfMonth.getDay()) / 7);
+
+            // Actualizar display
+            document.getElementById('weekNumber').textContent = weekNumber;
+            document.getElementById('monthYear').textContent = currentWeekStart.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+            document.getElementById('dateRange').textContent = 
+                `${formatDate(currentWeekStart)} - ${formatDate(weekEnd)}`;
+        }
+
+        function formatDate(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        function previousWeek() {
+            currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+            updateWeekDisplay();
+            // Aquí se podría cargar los datos de la semana anterior desde el servidor
+        }
+
+        function nextWeek() {
+            currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+            updateWeekDisplay();
+            // Aquí se podría cargar los datos de la semana siguiente desde el servidor
+        }
+
+        // Inicializar
+        updateWeekDisplay();
+    </script>
+</body>
+</html>

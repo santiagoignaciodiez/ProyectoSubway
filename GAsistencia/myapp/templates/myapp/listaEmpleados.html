@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -30,6 +31,8 @@
             font-size: 24px;
             cursor: pointer;
             padding: 5px;
+            text-decoration: none;
+            color: #000;
         }
 
         .header h1 {
@@ -47,11 +50,9 @@
             flex: 1;
             padding: 15px;
             text-align: center;
-            cursor: pointer;
-            border: none;
-            background: none;
-            font-size: 16px;
+            text-decoration: none;
             color: #666;
+            font-size: 16px;
             position: relative;
         }
 
@@ -71,7 +72,7 @@
         }
 
         .search-box {
-            background-color: #C8E6C9; /* Updated to stronger green tone for better contrast */
+            background-color: #C8E6C9;
             border-radius: 12px;
             padding: 15px;
             display: flex;
@@ -95,10 +96,6 @@
             color: #333;
         }
 
-        .search-box input::placeholder {
-            color: #666;
-        }
-
         .empleados-container {
             display: flex;
             flex-direction: column;
@@ -106,13 +103,12 @@
         }
 
         .empleado-card {
-            background-color: #C8E6C9; /* Updated to stronger green tone for better contrast */
+            background-color: #C8E6C9;
             border-radius: 12px;
             padding: 20px;
             display: flex;
             align-items: center;
             gap: 15px;
-            cursor: pointer;
         }
 
         .empleado-initial {
@@ -162,6 +158,7 @@
             align-items: center;
             justify-content: center;
             font-size: 20px;
+            text-decoration: none;
         }
 
         .action-button:hover {
@@ -182,6 +179,8 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 4px 12px rgba(0, 168, 120, 0.3);
+            text-decoration: none;
+            color: white;
         }
 
         .fab:hover {
@@ -207,32 +206,34 @@
 </head>
 <body>
     <div class="header">
-        <button class="back-button" onclick="window.location.href='/menuGerente/'">←</button>
+        <a href="{% url 'menu_gerente' %}" class="back-button">←</a>
         <h1>Lista de Empleado</h1>
     </div>
 
     <div class="tabs">
-        <button class="tab active" data-tab="activo">Activo</button>
-        <button class="tab" data-tab="inactivo">Inactivo</button>
+        <a href="{% url 'lista_empleados' %}?status=activo" class="tab {% if status == 'activo' %}active{% endif %}">Activo</a>
+        <a href="{% url 'lista_empleados' %}?status=inactivo" class="tab {% if status == 'inactivo' %}active{% endif %}">Inactivo</a>
     </div>
 
     <div class="search-box">
         <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
         </svg>
-        <input type="text" id="searchInput" placeholder="Buscar Empleado">
+        <form method="get" style="flex: 1; display: flex;">
+            <input type="hidden" name="status" value="{{ status }}">
+            <input type="text" name="search" placeholder="Buscar Empleado" value="{{ search }}">
+        </form>
     </div>
 
-    <div class="empleados-container" id="empleadosContainer">
+    <div class="empleados-container">
         {% if empleados %}
             {% for empleado in empleados %}
-            <div class="empleado-card" data-activo="{{ empleado.is_active|yesno:'true,false' }}" data-nombre="{{ empleado.nombre }} {{ empleado.apellido }}" data-dni="{{ empleado.dni }}" data-codigo="{{ empleado.employee_id }}" onclick="verEmpleado('{{ empleado.employee_id }}')">
-                <!-- Show employee photo if available, otherwise show initial -->
+            <div class="empleado-card">
                 <div class="empleado-initial">
                     {% if empleado.foto_perfil %}
                         <img src="{{ empleado.foto_perfil.url }}" alt="{{ empleado.nombre }}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
                     {% else %}
-                        {{ empleado.nombre.0 }}
+                        {{ empleado.nombre.0|upper }}
                     {% endif %}
                 </div>
                 <div class="empleado-info">
@@ -243,12 +244,16 @@
                     </div>
                 </div>
                 <div class="empleado-actions">
-                    <a href="{% url 'editar_empleado' empleado.employee_id %}" class="action-button" style="text-decoration: none; display: flex; align-items: center; justify-content: center;" onclick="event.stopPropagation();">
+                    <a href="{% url 'editar_empleado' empleado.employee_id %}" class="action-button">
                         ✏️
                     </a>
-                    <button class="action-button" onclick="event.stopPropagation(); eliminarEmpleado('{{ empleado.employee_id }}')">
-                        🗑️
-                    </button>
+                    <a href="{% url 'ver_empleado' empleado.employee_id %}" class="action-button">
+                        👁️
+                    </a>
+                    <form method="post" action="{% url 'api_desactivar_empleado' empleado.employee_id %}" style="display: inline;" onsubmit="return confirm('¿Estás seguro de que deseas desactivar este empleado?')">
+                        {% csrf_token %}
+                        <button type="submit" class="action-button">🗑️</button>
+                    </form>
                 </div>
             </div>
             {% endfor %}
@@ -260,88 +265,10 @@
         {% endif %}
     </div>
 
-    <button class="fab" onclick="window.location.href='/agregarEmpleado/'">
+    <a href="{% url 'agregar_empleado' %}" class="fab">
         <svg width="24" height="24" fill="none" stroke="white" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
         </svg>
-    </button>
-
-    <script>
-        // Tab switching
-        const tabs = document.querySelectorAll('.tab');
-        const cards = document.querySelectorAll('.empleado-card');
-
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                tabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-
-                const selectedTab = tab.dataset.tab;
-                cards.forEach(card => {
-                    const isActive = card.dataset.activo === 'true';
-                    if (selectedTab === 'activo' && isActive) {
-                        card.style.display = 'flex';
-                    } else if (selectedTab === 'inactivo' && !isActive) {
-                        card.style.display = 'flex';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-            });
-        });
-
-        // Search functionality
-        const searchInput = document.getElementById('searchInput');
-        searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            
-            cards.forEach(card => {
-                const nombre = card.dataset.nombre.toLowerCase();
-                const dni = card.dataset.dni.toLowerCase();
-                const codigo = card.dataset.codigo.toLowerCase();
-                
-                if (nombre.includes(searchTerm) || dni.includes(searchTerm) || codigo.includes(searchTerm)) {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        });
-
-        // Initialize: show only active employees
-        cards.forEach(card => {
-            if (card.dataset.activo !== 'true') {
-                card.style.display = 'none';
-            }
-        });
-
-        function eliminarEmpleado(employeeId) {
-            if (confirm('¿Estás seguro de que deseas desactivar este empleado?')) {
-                fetch(`/api/empleados/${employeeId}/desactivar/`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.exito) {
-                        alert(data.mensaje);
-                        window.location.reload();
-                    } else {
-                        alert('Error: ' + data.mensaje);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error al desactivar el empleado');
-                });
-            }
-        }
-
-        function verEmpleado(employeeId) {
-            window.location.href = `/verEmpleado/${employeeId}/`;
-        }
-    </script>
+    </a>
 </body>
 </html>

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -23,7 +24,6 @@
             margin: 0 auto;
         }
 
-        /* Header con logos */
         .header {
             display: flex;
             justify-content: space-between;
@@ -55,28 +55,6 @@
             color: #009639; 
         }
 
-        .colsubsidio-logo {
-            width: 60px;
-            height: 60px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .colsubsidio-icon {
-            font-size: 28px;
-            color: #4CAF50;
-            margin-bottom: 2px;
-        }
-
-        .colsubsidio-text {
-            font-size: 9px;
-            font-weight: 600;
-            color: #000000;
-        }
-
-        /* Sección de usuario */
         .user-section {
             display: flex;
             align-items: center;
@@ -116,7 +94,6 @@
             letter-spacing: 1px;
         }
 
-        /* Botones del menú */
         .menu-buttons {
             display: flex;
             flex-direction: column;
@@ -145,10 +122,6 @@
             transform: translateY(-2px);
         }
 
-        .menu-button:active {
-            transform: translateY(0);
-        }
-
         .menu-icon {
             width: 32px;
             height: 32px;
@@ -158,7 +131,6 @@
             font-size: 24px;
         }
 
-        /* Botón de salir */
         .logout-button {
             position: fixed;
             bottom: 30px;
@@ -177,37 +149,11 @@
 
         .logout-button:hover {
             background-color: #dc2626;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
-        }
-
-        .logout-button:active {
-            transform: translateY(0);
-        }
-
-        /* Iconos SVG simulados con símbolos */
-        .icon-check::before { content: '✓'; }
-        .icon-users::before { content: '👥'; }
-        .icon-clock::before { content: '🕐'; }
-        .icon-list::before { content: '📋'; }
-        .icon-warning::before { content: '⚠'; }
-        .icon-leaf::before { content: '🌱'; }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 0 10px;
-            }
-
-            .logout-button {
-                bottom: 20px;
-                right: 20px;
-            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header con logos -->
         <div class="header">
             <div class="subway-logo">
                 <div class="subway-text">
@@ -219,100 +165,49 @@
                     <span>Y</span>
                 </div>
             </div>
-            <div class="colsubsidio-logo">
-                <div class="colsubsidio-icon icon-leaf"></div>
-                <div class="colsubsidio-text">Colsubsidio</div>
-            </div>
         </div>
 
-        <!-- Información del usuario -->
         <div class="user-section">
-            <div class="user-avatar">U</div>
+            <div class="user-avatar">{{ empleado.nombre.0|upper }}</div>
             <div class="user-info">
                 <div class="user-role">Gerente</div>
-                <div class="user-id" id="userId">
-                    <span id="nombreApellido">xxxxxxxxxxxx</span>
-                </div>
+                <div class="user-id">{{ empleado.nombre }} {{ empleado.apellido }}</div>
             </div>
         </div>
 
-        <!-- Botones del menú -->
         <div class="menu-buttons">
-            <a href="/asistenciaGerente/" class="menu-button">
-                <div class="menu-icon icon-check"></div>
+            <a href="{% url 'asistencia_gerente' %}" class="menu-button">
+                <div class="menu-icon">✓</div>
                 <span>Asistencia</span>
             </a>
 
-            <a href="/justificacionesGerente/" class="menu-button">
-                <div class="menu-icon icon-users"></div>
+            <a href="{% url 'justificaciones_gerente' %}" class="menu-button">
+                <div class="menu-icon">👥</div>
                 <span>Justificaciones</span>
             </a>
 
-
-            <a href="#cronograma" class="menu-button">
-                <div class="menu-icon icon-clock"></div>
+            <a href="{% url 'cronograma' %}"class="menu-button">
+                <div class="menu-icon">🕐</div>
                 <span>Cronograma</span>
             </a>
 
-            <!-- Actualizando enlace para ir a la página de lista de empleados -->
-            <a href="/listaEmpleados/" class="menu-button">
-                <div class="menu-icon icon-list"></div>
+            <a href="{% url 'lista_empleados' %}" class="menu-button">
+                <div class="menu-icon">📋</div>
                 <span>Lista de Empleado</span>
             </a>
 
-            <a href="#sanciones" class="menu-button">
-                <div class="menu-icon icon-warning"></div>
+            <a class="menu-button">
+                <div class="menu-icon">⚠</div>
                 <span>Sanciones</span>
             </a>
         </div>
     </div>
 
-    <!-- Botón de salir -->
-    <button class="logout-button" id="logoutBtn">Salir</button>
-
-    <script>
-        // Cargar información del usuario
-        window.addEventListener('DOMContentLoaded', function() {
-            const datosEmpleado = localStorage.getItem('empleado');
-            
-            if (!datosEmpleado) {
-                window.location.href = '/login/';
-                return;
-            }
-            
-            const empleado = JSON.parse(datosEmpleado);
-            
-            // Si no es gerente, redirigir
-            if (!empleado.es_gerente) {
-                alert('Acceso denegado. Solo para gerentes.');
-                window.location.href = '/login/';
-                return;
-            }
-            
-            if (empleado.nombre && empleado.apellido) {
-                document.getElementById('nombreApellido').textContent = `${empleado.nombre} ${empleado.apellido}`;
-            }
-        });
-
-        // Botón de logout
-        document.getElementById('logoutBtn').addEventListener('click', async function() {
-            if (confirm('¿Estás seguro que deseas cerrar sesión?')) {
-                try {
-                    await fetch('/api/logout/', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        }
-                    });
-                } catch (error) {
-                    console.error('Error al cerrar sesión:', error);
-                }
-                
-                localStorage.removeItem('empleado');
-                localStorage.removeItem('token');
-                window.location.href = '/login/';
-            }
-        });
-    </script>
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <button type="submit" class="logout-button" onclick="return confirm('¿Estás seguro que deseas cerrar sesión?')">
+            Salir
+        </button>
+    </form>
 </body>
 </html>

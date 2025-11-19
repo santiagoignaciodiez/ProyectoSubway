@@ -4,6 +4,7 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from pathlib import Path
 from io import BytesIO
+from zk import ZK
 
 def process_employee_photo(photo_file, employee_id):
     """
@@ -77,4 +78,23 @@ def optimize_employee_photo(photo_file, employee_id, max_size=(500, 500)):
         print(f"[v0] Error optimizando foto para {employee_id}: {str(e)}")
         import traceback
         traceback.print_exc()
+        return None
+
+def obtener_dispositivo():
+    """
+    Conecta con el dispositivo ZKTeco y devuelve la instancia conectada.
+    """
+    try:
+        zk = ZK(
+            '192.168.1.201',  # IP del dispositivo
+            port=4370,
+            timeout=5,
+            password=0,
+            force_udp=False,
+            ommit_ping=False
+        )
+        dispositivo = zk.connect()
+        return dispositivo
+    except Exception as e:
+        print(f"[ERROR] No se pudo conectar al dispositivo: {e}")
         return None

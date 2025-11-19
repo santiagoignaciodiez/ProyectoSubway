@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistencia - Subway</title>
+    <!-- Replaced custom CSS with Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-4xl mx-auto p-4">
+        <!-- Converted header to Tailwind classes -->
+        <div class="flex items-center gap-4 mb-6">
+            <a href="{% url 'menu_gerente' %}" class="w-10 h-10 flex items-center justify-center bg-white rounded-full shadow hover:bg-gray-100 transition-colors text-xl">
+                ←
+            </a>
+            <h1 class="text-2xl font-bold text-gray-900">Asistencia</h1>
+            
+            <!-- Moved sync button to header -->
+            <button type="button" id="syncBtn" onclick="sincronizar()" class="ml-auto px-6 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors">
+                Sincronizar
+            </button>
+        </div>
+
+        <!-- Converted tabs to Tailwind classes -->
+        <div class="flex gap-6 border-b border-gray-200 mb-6">
+            <a href="{% url 'asistencia_gerente' %}?tab=diaria" class="pb-3 px-1 text-sm font-medium transition-colors {% if tab == 'diaria' %}text-green-600 border-b-2 border-green-600{% else %}text-gray-500 hover:text-gray-700{% endif %}">
+                Diaria
+            </a>
+            <a href="{% url 'asistencia_gerente' %}?tab=semanal" class="pb-3 px-1 text-sm font-medium transition-colors {% if tab == 'semanal' %}text-green-600 border-b-2 border-green-600{% else %}text-gray-500 hover:text-gray-700{% endif %}">
+                Semanal
+            </a>
+            <a href="{% url 'asistencia_gerente' %}?tab=mensual" class="pb-3 px-1 text-sm font-medium transition-colors {% if tab == 'mensual' %}text-green-600 border-b-2 border-green-600{% else %}text-gray-500 hover:text-gray-700{% endif %}">
+                Mensual
+            </a>
+        </div>
+
+        <!-- Converted sync message to Tailwind -->
+        <div id="syncMessage" class="mb-4"></div>
+
+        <!-- Converted messages to Tailwind -->
+        {% if messages %}
+            <div id="messageContainer" class="mb-4">
+                {% for message in messages %}
+                    <div class="p-4 rounded-lg mb-2 {% if message.tags == 'success' %}bg-green-100 text-green-800{% elif message.tags == 'error' %}bg-red-100 text-red-800{% else %}bg-blue-100 text-blue-800{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Converted filters to Tailwind -->
+        {% if tab == 'diaria' %}
+        <div class="flex gap-3 mb-4">
+            <a href="{% url 'asistencia_gerente' %}?tab=diaria&status=presente" 
+               class="flex-1 py-3 px-4 rounded-lg text-sm font-medium text-center transition-all {% if status == 'presente' %}bg-gray-900 text-white{% else %}bg-gray-100 text-gray-600 hover:bg-gray-200{% endif %}">
+                ✓ Presente
+            </a>
+            <a href="{% url 'asistencia_gerente' %}?tab=diaria&status=ausente" 
+               class="flex-1 py-3 px-4 rounded-lg text-sm font-medium text-center transition-all {% if status == 'ausente' %}bg-gray-900 text-white{% else %}bg-gray-100 text-gray-600 hover:bg-gray-200{% endif %}">
+                Ausente
+            </a>
+        </div>
+
+        <!-- Converted date display to Tailwind -->
+        <div class="text-center text-gray-500 text-sm mb-6">
+            -{% now "d/m/Y" %}-
+        </div>
+        {% endif %}
+
+        <!-- Converted attendance cards to Tailwind -->
+        <div class="space-y-4" id="employeesContainer">
+            {% if not empleados_asistencia %}
+              
+            {% else %}
+                {% for emp in empleados_asistencia %}
+                <div class="relative bg-green-50 border-2 border-green-200 rounded-2xl p-4 hover:shadow-lg transition-shadow">
+                    <!-- Converted badge to Tailwind -->
+                    {% if emp.tardanza %}
+                    <div class="absolute top-3 right-3 px-3 py-1 bg-yellow-400 text-yellow-900 text-xs font-medium rounded-full flex items-center gap-1">
+                        ● Tardanza
+                    </div>
+                    {% elif emp.relevo %}
+                    <div class="absolute top-3 right-3 px-3 py-1 bg-orange-400 text-orange-900 text-xs font-medium rounded-full flex items-center gap-1">
+                        ● Relevo
+                    </div>
+                    {% endif %}
+
+                    <div class="flex items-start gap-4">
+                        <!-- Converted avatar to Tailwind -->
+                        <div class="w-12 h-12 bg-white border-2 border-green-600 rounded-full flex items-center justify-center text-green-600 font-bold text-xl flex-shrink-0">
+                            A
+                        </div>
+
+                        <!-- Converted card info to Tailwind -->
+                        <div class="flex-1 min-w-0">
+                            <div class="text-lg font-bold text-gray-900 mb-2">{{ emp.nombre|default:"XXXXXXX" }}</div>
+                            <div class="space-y-1 text-sm text-gray-700">
+                                <div>Tipo de Empleado: {{ emp.cargo|default:"Principiante" }}</div>
+                                <div>Turno: {{ emp.turno|default:"Mañana" }}</div>
+                                <div>Horario Entrada: {% if emp.entrada %}{{ emp.entrada|date:"H:i" }}{% else %}9:10{% endif %}</div>
+                                <div>Horario Salida: {% if emp.salida %}{{ emp.salida|date:"H:i" }}{% else %}17:15{% endif %}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <!-- Dynamic cards container for JavaScript -->
+        
+    </div>
+
+    <script src="{% static 'js/asistencia.js' %}"></script>
+</body>
+</html>

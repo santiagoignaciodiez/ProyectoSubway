@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datos Asistencia Empleado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-md mx-auto bg-white min-h-screen">
+        <!-- Header -->
+        <div class="bg-white border-b border-gray-200 px-4 py-4 flex items-center gap-3">
+            <button onclick="history.back()" class="text-gray-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+            <h1 class="text-lg font-semibold text-gray-900">Datos Asistencia Empleado</h1>
+        </div>
+
+        <!-- Content -->
+        <div class="px-4 py-6 space-y-6">
+            <!-- Employee Info -->
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-semibold flex-shrink-0">
+                    A
+                </div>
+                <div>
+                    <h2 class="font-semibold text-gray-900 text-lg">Santiago Ignacio Diez</h2>
+                    <p class="text-sm text-gray-600">Tipo de Empleado: B</p>
+                    <p class="text-sm text-gray-600">Turno: Mañana</p>
+                </div>
+            </div>
+
+            <!-- Horarios del Turno -->
+            <div class="border-t border-gray-200 pt-4">
+                <h3 class="font-semibold text-gray-900 mb-2">Horarios del Turno</h3>
+                <p class="text-sm text-gray-700">Entrada: 9:00  Salida: 17:00</p>
+            </div>
+
+            <!-- Horarios de Asistencia -->
+            <div class="border-t border-gray-200 pt-4">
+                <h3 class="font-semibold text-gray-900 mb-2">Horarios de Asistencia</h3>
+                <p class="text-sm text-gray-700">Entrada: 9:02  Salida: 17:01</p>
+            </div>
+
+            <!-- Tardanza -->
+            <div class="border-t border-gray-200 pt-4">
+                <p class="text-sm text-gray-700"><span class="font-semibold">Tardanza:</span> 0 minutos</p>
+            </div>
+
+            <!-- Justificado (Read-only) -->
+            <div class="border-t border-gray-200 pt-4">
+                <label class="block text-sm font-semibold text-gray-900 mb-2">Justificado:</label>
+                <p class="text-sm text-gray-700">NO</p>
+            </div>
+
+            <!-- Relevo (Read-only) -->
+            <div class="border-t border-gray-200 pt-4">
+                <label class="block text-sm font-semibold text-gray-900 mb-2">Relevo:</label>
+                <p class="text-sm text-gray-700">NO</p>
+            </div>
+
+            <!-- Observacion (Read-only) -->
+            <div class="border-t border-gray-200 pt-4">
+                <label class="block text-sm font-semibold text-gray-900 mb-2">Observación:</label>
+                <div class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg text-sm text-gray-700 min-h-[80px]">
+                    Sin observaciones registradas
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
